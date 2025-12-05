@@ -1,0 +1,56 @@
+package polihack.backend.dto.response;
+
+import polihack.backend.model.enums.AssistanceType;
+import java.util.List;
+
+public class RegisterResponse {
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String username;
+
+    // Câmpuri noi
+    private String PID;
+    private String telephone;
+    private String email;
+
+    private List<AssistanceType> assistanceTypeList;
+
+    // Constructor actualizat cu noile câmpuri
+    public RegisterResponse(Long id, String firstName, String lastName, String username,
+                            String PID, String telephone, String email,
+                            List<AssistanceType> assistanceTypeList) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.PID = PID;
+        this.telephone = telephone;
+        this.email = email;
+        this.assistanceTypeList = assistanceTypeList;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPID() { return PID; }
+    public void setPID(String PID) { this.PID = PID; }
+
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public List<AssistanceType> getAssistanceTypeList() { return assistanceTypeList; }
+    public void setAssistanceTypeList(List<AssistanceType> assistanceTypeList) { this.assistanceTypeList = assistanceTypeList; }
+}
