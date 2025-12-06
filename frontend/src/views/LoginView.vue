@@ -53,17 +53,26 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router'; // 1. Importam si useRoute
+import { useMainStore } from '@/stores/mainStore';
 
 const router = useRouter();
+const route = useRoute(); // 2. Initializam route (pentru a citi parametrii din URL)
+const store = useMainStore();
+
 const username = ref('');
 const password = ref('');
 
 const handleLogin = () => {
-  // Aici vei pune logica de Firebase Login
   console.log("Logging in...", username.value);
-  // Simulam succes si mergem la Dashboard
-  router.push('/dashboard');
+  store.login(username.value);
+
+  // 3. LOGICA NOUA DE REDIRECTIONARE
+  // Verificam daca in URL exista ?redirect=...
+  const redirectPath = route.query.redirect || '/';
+
+  // Daca exista redirect, mergem acolo. Daca nu (cazul Navbar), mergem la '/' (Home)
+  router.push(redirectPath);
 };
 </script>
 
