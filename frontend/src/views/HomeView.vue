@@ -18,15 +18,27 @@
 
       <div class="action-buttons">
 
-        <button class="action-card victim-card" @click="handleVictimClick">
+        <button
+            class="action-card victim-card"
+            :class="{ 'disabled-card': isCooldownActive }"
+            @click="handleVictimClick"
+            :disabled="isCooldownActive"
+        >
           <div class="icon-box">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg v-if="!isCooldownActive" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
           </div>
+
           <div class="text-content">
-            <h3>I NEED HELP</h3>
-            <p>I am a victim and I need assistance</p>
+            <h3 v-if="!isCooldownActive">I NEED HELP</h3>
+            <h3 v-else>PLEASE WAIT</h3>
+
+            <p v-if="!isCooldownActive">I am a victim and I need assistance</p>
+            <p v-else>Next request available in: <strong>{{ timeRemaining }}</strong></p>
           </div>
         </button>
 
@@ -50,22 +62,65 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '@/stores/mainStore';
 
 const router = useRouter();
 const store = useMainStore();
 
+// --- LOGICA PENTRU COOLDOWN ---
+const isCooldownActive = ref(false);
+const timeRemaining = ref('');
+let timerInterval = null;
+
+const checkCooldown = () => {
+  const expiry = localStorage.getItem('requestCooldown');
+
+  if (expiry) {
+    const now = Date.now();
+    const diff = parseInt(expiry) - now;
+
+    if (diff > 0) {
+      isCooldownActive.value = true;
+      // Calculăm minute și secunde rămase
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      // Formatăm frumos (ex: 14:05)
+      timeRemaining.value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    } else {
+      // A expirat timpul
+      isCooldownActive.value = false;
+      localStorage.removeItem('requestCooldown');
+      if (timerInterval) clearInterval(timerInterval);
+    }
+  } else {
+    isCooldownActive.value = false;
+  }
+};
+
+onMounted(() => {
+  checkCooldown(); // Verificăm imediat la încărcare
+  // Pornim un interval care verifică la fiecare secundă
+  timerInterval = setInterval(checkCooldown, 1000);
+});
+
+onUnmounted(() => {
+  if (timerInterval) clearInterval(timerInterval);
+});
+// ------------------------------
+
 // --- LOGICA PENTRU VICTIMĂ ---
 const handleVictimClick = () => {
+  // Verificare extra de siguranță
+  if (isCooldownActive.value) return;
+
   const token = localStorage.getItem('token');
   const userType = localStorage.getItem('userType');
 
-  // SCENARIUL 2: Daca e logat -> Harta (/client)
   if (token && (userType === 'client' || userType === 'victim')) {
     router.push('/client');
   }
-  // Altfel -> Login (/client/login)
   else {
     router.push('/client/login');
   }
@@ -82,7 +137,7 @@ const handleRescuerClick = () => {
 </script>
 
 <style scoped>
-/* CSS-ul rămâne neschimbat */
+/* CSS-ul existent */
 .home-container {
   min-height: 100vh;
   display: flex;
@@ -154,6 +209,22 @@ const handleRescuerClick = () => {
   transform: translateY(-2px);
   box-shadow: 0 8px 15px rgba(0,0,0,0.15);
 }
+
+/* STILURI NOI PENTRU BUTON DEZACTIVAT */
+.disabled-card {
+  background-color: #e9ecef !important;
+  color: #6c757d !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border: 1px solid #dee2e6;
+}
+
+.disabled-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+/* --------------------------------- */
 
 .icon-box {
   margin-right: 20px;

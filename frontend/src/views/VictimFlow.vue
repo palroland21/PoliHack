@@ -1,35 +1,30 @@
 <template>
   <div class="victim-flow">
-    <!-- Back button -->
     <button class="back-btn" @click="goBack" v-if="step < 4">
       <span class="arrow">←</span> Back
     </button>
 
-    <!-- Step 1: Location -->
     <LocationStep
-      v-if="step === 1"
-      @update:location="location => confirmedLocation = location"
-      @update:coordinates="coords => confirmedCoordinates = coords"
-      @next="nextStep"
+        v-if="step === 1"
+        @update:location="location => confirmedLocation = location"
+        @update:coordinates="coords => confirmedCoordinates = coords"
+        @next="nextStep"
     />
 
-    <!-- Step 2: Needs -->
     <NeedsSelector
-      v-if="step === 2"
-      @update:selectedNeeds="needs => selectedNeeds = needs"
-      @next="nextStep"
-      @back="prevStep"
+        v-if="step === 2"
+        @update:selectedNeeds="needs => selectedNeeds = needs"
+        @next="nextStep"
+        @back="prevStep"
     />
 
-    <!-- Step 3: Triage -->
     <TriageForm
-      v-if="step === 3"
-      @update:triageResult="result => triageResult = result"
-      @submit="showResult"
-      @back="prevStep"
+        v-if="step === 3"
+        @update:triageResult="result => triageResult = result"
+        @submit="showResult"
+        @back="prevStep"
     />
 
-    <!-- Step 4: Result -->
     <div v-if="step === 4" class="result-container">
       <div class="success-animation">
         <div class="checkmark">✓</div>
@@ -37,7 +32,6 @@
       <h1 class="result-title">Help is on the way!</h1>
       <p class="result-subtitle">Your request has been submitted successfully</p>
 
-      <!-- Priority Card -->
       <div class="priority-card" v-if="triageResult" :class="'priority-' + triageResult.level">
         <div class="priority-header">
           <span class="priority-badge">Priority {{ triageResult.level }}</span>
@@ -50,7 +44,6 @@
         </div>
       </div>
 
-      <!-- Summary Section -->
       <div class="summary-section">
         <h3 class="summary-title">📋 Request Summary</h3>
 
@@ -81,7 +74,6 @@
         </div>
       </div>
 
-      <!-- What's Next -->
       <div class="next-steps">
         <h4>What happens next?</h4>
         <ul>
@@ -128,8 +120,17 @@ export default {
       step.value--
     }
 
+    // Funcția care se apelează când trimiți cererea finală
     function showResult() {
       step.value = 4
+
+      // --- START TIMER LOGIC ---
+      // Salvăm momentul expirării (Acum + 15 minute)
+      const COOLDOWN_MINUTES = 15;
+      const expiryTime = Date.now() + (COOLDOWN_MINUTES * 60 * 1000);
+      localStorage.setItem('requestCooldown', expiryTime);
+      // --- END TIMER LOGIC ---
+
       console.log('Victim Flow Data:', {
         location: confirmedLocation.value,
         coordinates: confirmedCoordinates.value,
