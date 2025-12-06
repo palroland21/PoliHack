@@ -45,6 +45,12 @@ public class Rescuer {
     @Column(name = "assistance_type")
     private List<AssistanceType> assistanceTypeList;
 
+    @Column(name = "is_medical_verified")
+    private Boolean isMedicalVerified = false; // Default false
+
+    @Column(name = "medical_cuim")
+    private String medicalCuim;
+
     public Long getId() {
         return id;
     }
@@ -115,5 +121,21 @@ public class Rescuer {
 
     public void setAssistanceTypeList(List<AssistanceType> assistanceTypeList) {
         this.assistanceTypeList = assistanceTypeList;
+    }
+
+    public Boolean getMedicalVerified() {
+        return isMedicalVerified;
+    }
+
+    public void setMedicalVerified(Boolean medicalVerified) {
+        isMedicalVerified = medicalVerified;
+    }
+
+    public String getMedicalCuim() {
+        return medicalCuim;
+    }
+
+    public void setMedicalCuim(String medicalCuim) {
+        this.medicalCuim = medicalCuim;
     }
 }
