@@ -1,118 +1,133 @@
 <template>
   <nav class="navbar">
     <div class="navbar-container">
-      <!-- Logo and brand -->
-      <div class="navbar-brand">
-        <img src="/ResQ.png" alt="ResQ Logo" class="logo-img">
-      </div>
 
-      <!-- Navigation menu -->
+      <router-link to="/" class="navbar-brand">
+        <div class="logo">
+          <img src="/ResQ.png" alt="ResQ Logo" class="logo-icon">
+          <span class="logo-text">ResQ</span>
+        </div>
+      </router-link>
+
       <ul class="nav-menu">
         <li class="nav-item">
-          <router-link to="/" class="nav-link" @click="handleNavClick">
-            Acasă
-          </router-link>
+          <router-link to="/" class="nav-link">Home</router-link>
         </li>
         <li class="nav-item">
-          <a href="#about" class="nav-link" @click="handleNavClick">
-            Despre</a>
+          <a href="#" class="nav-link">About</a>
         </li>
         <li class="nav-item">
-          <a href="#contact" class="nav-link" @click="handleNavClick">
-            Contact
-          </a>
+          <a href="#" class="nav-link">Contact</a>
         </li>
       </ul>
+
+      <div class="navbar-actions">
+        <router-link to="/login" class="auth-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sign In
+        </router-link>
+      </div>
+
     </div>
   </nav>
 </template>
 
 <script>
 export default {
-  name: 'Navbar',
-  methods: {
-    handleNavClick() {
-      // Navigation link clicked
-    }
-  }
+  name: 'Navbar'
 }
 </script>
 
 <style scoped>
-/* Navbar styling */
 .navbar {
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   padding: 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .navbar-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px;
+  height: 80px;
 }
 
-/* Logo styling */
 .navbar-brand {
+  text-decoration: none;
+}
+
+.logo {
   display: flex;
   align-items: center;
-  margin-right: 40px;
+  gap: 10px;
 }
 
-.logo-img {
-  width: 50px;
-  height: 50px;
+/* Image Logo Style */
+.logo-icon {
+  height: 40px; /* Adjust height to fit navbar */
+  width: auto;
   object-fit: contain;
-  display: block;
 }
 
+.logo-text {
+  color: #333;
+  font-weight: 700;
+  font-size: 24px;
+}
 
-/* Navigation menu */
 .nav-menu {
   display: flex;
   list-style: none;
-  gap: 50px;
+  gap: 40px;
   margin: 0;
   padding: 0;
 }
 
-.nav-item {
-  margin: 0;
+@media (max-width: 768px) {
+  .nav-menu { display: none; }
 }
 
 .nav-link {
-  color: #999;
+  color: #6c757d;
   text-decoration: none;
   font-weight: 500;
-  font-size: 15px;
-  position: relative;
-  padding: 5px 0;
+  font-size: 16px;
   transition: color 0.3s ease;
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #8b5a3c;
-  transition: width 0.3s ease;
-}
-
 .nav-link:hover {
-  color: #333;
+  color: #198754;
 }
 
-.nav-link:hover::after {
-  width: 100%;
+/* Green Auth Button style */
+.auth-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #198754;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 4px 6px rgba(25, 135, 84, 0.2);
+}
+
+.auth-button:hover {
+  background-color: #157347;
+  transform: translateY(-1px);
+}
+
+.auth-button:active {
+  transform: translateY(0);
 }
 </style>
