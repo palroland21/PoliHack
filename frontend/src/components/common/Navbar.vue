@@ -14,10 +14,10 @@
           <router-link to="/" class="nav-link">Home</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/about" class="nav-link">About</router-link>
+          <a href="#" class="nav-link">About</a>
         </li>
         <li class="nav-item">
-          <router-link to="/contact" class="nav-link">Contact</router-link>
+          <a href="#" class="nav-link">Contact</a>
         </li>
       </ul>
 
@@ -25,7 +25,10 @@
 
         <router-link to="/donate" class="donate-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-          Donate
+
+          <span v-if="currentUserType === 'client' || currentUserType === 'victim'">Donation / Pay Subscription</span>
+
+          <span v-else>Donate</span>
         </router-link>
 
         <router-link v-if="!store.isLoggedIn" to="/login" class="auth-button">
@@ -66,32 +69,31 @@ import { computed } from 'vue';
 const store = useMainStore();
 const router = useRouter();
 
-// Luăm tipul utilizatorului direct din localStorage (sau poți să-l pui în Store dacă vrei să fie mai reactiv)
-// Folosim computed pentru a reactiona la schimbari daca store-ul se actualizeaza
+// Luăm tipul utilizatorului.
+// Încercăm întâi din Store (dacă l-ai actualizat conform discuției anterioare pentru reactivitate),
+// altfel fallback pe localStorage.
 const currentUserType = computed(() => {
   if (store.isLoggedIn) {
+    // Dacă ai implementat `store.userType` în mainStore.js, folosește `return store.userType;` aici pentru reactivitate maximă.
+    // Altfel, lăsăm așa cum era:
     return localStorage.getItem('userType');
   }
   return null;
 });
 
 const handleLogout = () => {
-  // 1. Stergem Token-ul si datele din LocalStorage
   localStorage.removeItem('token');
   localStorage.removeItem('userType');
   localStorage.removeItem('username');
   localStorage.removeItem('loggedUserId');
 
-  // 2. Actualizam starea in Pinia Store
   store.logout();
 
-  // 3. Redirectionam catre Home
   router.push('/');
 };
 </script>
 
 <style scoped>
-/* AICI RAMANE STILUL TAU ORIGINAL */
 .navbar {
   background-color: #f8f9fa;
   padding: 0;
@@ -174,7 +176,6 @@ const handleLogout = () => {
 .auth-button:hover { background-color: #157347; transform: translateY(-1px); }
 .auth-button:active { transform: translateY(0); }
 
-/* Stil pentru Dashboard (Salvatori) */
 .dashboard-btn {
   display: flex; align-items: center; gap: 8px;
   background-color: #343a40; color: white;
@@ -184,10 +185,9 @@ const handleLogout = () => {
 }
 .dashboard-btn:hover { background-color: #23272b; }
 
-/* Stil pentru Butonul Harta (Victime) */
 .map-btn {
   display: flex; align-items: center; gap: 8px;
-  background-color: #dc3545; /* Rosu pentru alerta/victima */
+  background-color: #dc3545;
   color: white;
   padding: 8px 16px; border-radius: 8px;
   text-decoration: none; font-weight: 600; font-size: 14px;

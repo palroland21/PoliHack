@@ -73,4 +73,54 @@ public class PaymentController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("/create-subscription-session")
+    public ResponseEntity<Map<String, String>> createSubscriptionSession(@RequestBody Map<String, Object> payload) {
+        Stripe.apiKey = stripeApiKey;
+
+        // Setam suma de: 10.00 USD
+        long amountInCents = 1000L;
+        String currency = "usd";
+
+        try {
+            SessionCreateParams params = SessionCreateParams.builder()
+                    .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                    // IMPORTANT: Modul trebuie să fie SUBSCRIPTION
+                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                    .setSuccessUrl(clientBaseUrl + "/success")
+                    .setCancelUrl(clientBaseUrl + "/donate")
+                    .addLineItem(
+                            SessionCreateParams.LineItem.builder()
+                                    .setQuantity(1L)
+                                    .setPriceData(
+                                            SessionCreateParams.LineItem.PriceData.builder()
+                                                    .setCurrency(currency)
+                                                    .setUnitAmount(amountInCents)
+                                                    // IMPORTANT: Aici definim recurența (LUNARA)
+                                                    .setRecurring(
+                                                            SessionCreateParams.LineItem.PriceData.Recurring.builder()
+                                                                    .setInterval(SessionCreateParams.LineItem.PriceData.Recurring.Interval.MONTH)
+                                                                    .build()
+                                                    )
+                                                    .setProductData(
+                                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                                    .setName("ResQ Monthly Membership")
+                                                                    .setDescription("Recurring support ($10/month)")
+                                                                    .build())
+                                                    .build())
+                                    .build())
+                    .build();
+
+            Session session = Session.create(params);
+
+            Map<String, String> responseData = new HashMap<>();
+            responseData.put("checkoutUrl", session.getUrl());
+
+            return ResponseEntity.ok(responseData);
+
+        } catch (StripeException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
