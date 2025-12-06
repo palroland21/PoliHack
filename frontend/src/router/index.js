@@ -6,6 +6,7 @@ import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import DonationView from "../views/donationView/DonationView.vue";
 import SuccessView from "../views/donationView/SuccessView.vue";
+import RescuerDashboard from "@/components/rescuer/RescuerDashboard.vue";
 
 const routes = [
     {
@@ -42,7 +43,13 @@ const routes = [
         path: '/success',
         name: 'SuccessView',
         component: SuccessView
+    },
+    {
+        path: '/dashboard',
+        name: 'RescuerDashboard',
+        component: RescuerDashboard
     }
+
 ]
 
 const router = createRouter({
