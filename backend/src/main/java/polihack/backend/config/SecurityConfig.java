@@ -19,6 +19,7 @@ public class SecurityConfig {
                         .requestMatchers("/transport/**").permitAll()
                         .requestMatchers("/housing/**").permitAll()
                         .requestMatchers("/resources/**").permitAll()
+                        .requestMatchers("/auth/company/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
