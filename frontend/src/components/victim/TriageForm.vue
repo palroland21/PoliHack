@@ -65,9 +65,16 @@ async function analyzeSymptoms() {
 
   } catch (error) {
     console.error('AI Triage failed:', error)
-    errorMessage.value = "System is overloaded or offline. Please try again."
-    // Fallback: If AI fails, default to Medium
-    triageResult.value = getSeverityDetails(2, 'MODERATE', 'Please see a doctor for evaluation.', 'AI analysis unavailable.')
+
+    // User-friendly error message
+    if (error.message && error.message.includes('403')) {
+      errorMessage.value = "AI service temporarily unavailable. Using fallback assessment."
+    } else {
+      errorMessage.value = "Could not reach AI service. Using fallback assessment."
+    }
+
+    // Fallback: Use keyword-based local triage
+    triageResult.value = performLocalTriage(symptoms.value)
   } finally {
     isAnalyzing.value = false
   }
@@ -96,7 +103,7 @@ const hasSymptoms = computed(() => symptoms.value.trim().length > 0)
   <div class="step-container">
     <div class="step-header">
       <div class="step-icon">🤖</div>
-      <h1 class="step-title">AI Triage Assistant</h1>
+      <h1 class="step-title">Step 3: AI Triage Assistant</h1>
       <p class="step-description">
         Describe your situation in English or Romanian. Our AI will assess the urgency.
       </p>

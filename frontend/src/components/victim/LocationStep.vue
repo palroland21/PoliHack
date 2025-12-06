@@ -103,7 +103,7 @@ function handleContinue() {
   <div class="step-container">
     <div class="step-header">
       <div class="step-icon">📍</div>
-      <h1 class="step-title">Step 1: Your Location</h1>
+      <h1 class="step-title">Step 2: Your Location</h1>
       <p class="step-description">Use GPS or click on the map to set your location</p>
     </div>
 

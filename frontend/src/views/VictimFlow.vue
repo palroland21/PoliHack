@@ -1,35 +1,41 @@
 <template>
   <div class="victim-flow">
     <!-- Back button -->
-    <button class="back-btn" @click="goBack" v-if="step < 4">
+    <button class="back-btn" @click="goBack" v-if="step < 5 && step !== 1">
       <span class="arrow">←</span> Back
     </button>
 
-    <!-- Step 1: Location -->
-    <LocationStep
+    <!-- Step 1: Needs Selection -->
+    <NeedsSelector
       v-if="step === 1"
+      @update:selectedNeeds="handleNeedsSelected"
+      @next="handleNeedsNext"
+    />
+
+    <!-- Step 2: Location (only for Medical Assistance) -->
+    <LocationStep
+      v-if="step === 2 && selectedNeeds.includes(1)"
       @update:location="location => confirmedLocation = location"
       @update:coordinates="coords => confirmedCoordinates = coords"
       @next="nextStep"
     />
 
-    <!-- Step 2: Needs -->
-    <NeedsSelector
-      v-if="step === 2"
-      @update:selectedNeeds="needs => selectedNeeds = needs"
-      @next="nextStep"
-      @back="prevStep"
-    />
-
-    <!-- Step 3: Triage -->
+    <!-- Step 3: Medical Triage (if Medical Assistance selected) -->
     <TriageForm
-      v-if="step === 3"
+      v-if="step === 3 && selectedNeeds.includes(1)"
       @update:triageResult="result => triageResult = result"
       @submit="showResult"
       @back="prevStep"
     />
 
-    <!-- Step 4: Result -->
+    <!-- Step 2b: Logistics Form (if Resources & Logistics selected) -->
+    <VictimLogistics
+      v-if="step === 2 && selectedNeeds.includes(2) && !selectedNeeds.includes(1)"
+      @submit="handleLogisticsSubmit"
+      @back="prevStep"
+    />
+
+    <!-- Step 5: Result -->
     <div v-if="step === 4" class="result-container">
       <div class="success-animation">
         <div class="checkmark">✓</div>
@@ -104,13 +110,15 @@ import { useRouter } from 'vue-router'
 import LocationStep from '@/components/victim/LocationStep.vue'
 import NeedsSelector from '@/components/victim/NeedsSelector.vue'
 import TriageForm from '@/components/victim/TriageForm.vue'
+import VictimLogistics from '@/components/victim/VictimLogistics.vue'
 
 export default {
   name: 'VictimFlow',
   components: {
     LocationStep,
     NeedsSelector,
-    TriageForm
+    TriageForm,
+    VictimLogistics
   },
   setup() {
     const router = useRouter()
@@ -119,6 +127,7 @@ export default {
     const confirmedCoordinates = ref(null)
     const selectedNeeds = ref([])
     const triageResult = ref(null)
+    const logisticsData = ref(null)
 
     function nextStep() {
       step.value++
@@ -150,6 +159,21 @@ export default {
       router.push('/')
     }
 
+    function handleNeedsSelected(needs) {
+      selectedNeeds.value = needs
+    }
+
+    function handleNeedsNext() {
+      // After selecting needs, go to appropriate step
+      step.value = 2
+    }
+
+    function handleLogisticsSubmit(payload) {
+      logisticsData.value = payload
+      console.log('Logistics Data:', payload)
+      step.value = 4
+    }
+
     function getNeedsText() {
       const needsMap = {
         1: 'Medical Assistance',
@@ -166,9 +190,13 @@ export default {
       goBack,
       goHome,
       getNeedsText,
+      handleNeedsSelected,
+      handleNeedsNext,
+      handleLogisticsSubmit,
       confirmedLocation,
       confirmedCoordinates,
       selectedNeeds,
+      logisticsData,
       triageResult,
       showResult
     }
