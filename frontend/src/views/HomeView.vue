@@ -18,7 +18,7 @@
 
       <div class="action-buttons">
 
-        <button class="action-card victim-card" @click="navigateTo('/victim')">
+        <button class="action-card victim-card" @click="handleVictimClick">
           <div class="icon-box">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -56,21 +56,33 @@ import { useMainStore } from '@/stores/mainStore';
 const router = useRouter();
 const store = useMainStore();
 
-const navigateTo = (path) => {
-  router.push(path);
+// --- LOGICA PENTRU VICTIMĂ ---
+const handleVictimClick = () => {
+  const token = localStorage.getItem('token');
+  const userType = localStorage.getItem('userType');
+
+  // SCENARIUL 2: Daca e logat -> Harta (/client)
+  if (token && (userType === 'client' || userType === 'victim')) {
+    router.push('/client');
+  }
+  // Altfel -> Login (/client/login)
+  else {
+    router.push('/client/login');
+  }
 };
 
+// --- LOGICA PENTRU SALVATOR (Rescuer) ---
 const handleRescuerClick = () => {
   if (store.isLoggedIn) {
     router.push('/rescuer');
   } else {
-    // Il trimitem la login, dar ii spunem sa revina la '/rescuer' dupa succes
     router.push({ path: '/login', query: { redirect: '/rescuer' } });
   }
 };
 </script>
 
 <style scoped>
+/* CSS-ul rămâne neschimbat */
 .home-container {
   min-height: 100vh;
   display: flex;

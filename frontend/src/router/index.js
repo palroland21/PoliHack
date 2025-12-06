@@ -10,21 +10,49 @@ import RescuerDashboard from "@/components/rescuer/RescuerDashboard.vue";
 import AboutView from "@/views/AboutView.vue";
 import ContactView from "@/views/ContactView.vue";
 
+import VictimLogin from "@/components/victim/VictimLogin.vue";
+import VictimRegister from "@/components/victim/VictimRegister.vue";
+
 const routes = [
     {
-      path: '/',
-      name: 'Home',
-      component: HomeView
+        path: '/',
+        name: 'Home',
+        component: HomeView
+    },
+    // --- RUTE PENTRU VICTIME (CLIENT) ---
+    {
+        path: '/client/login',
+        name: 'VictimLogin',
+        component: VictimLogin
     },
     {
-      path: '/victim',
-      name: 'VictimFlow',
-      component: VictimFlow
+        path: '/client/register',
+        name: 'VictimRegister',
+        component: VictimRegister
     },
+    // --- RUTA PROTEJATĂ (HARTA) ---
     {
-      path: '/rescuer',
-      name: 'RescuerHub',
-      component: RescuerHub
+        path: '/client',
+        name: 'VictimFlow',
+        component: VictimFlow,
+        beforeEnter: (to, from, next) => {
+            const token = localStorage.getItem('token');
+            const userType = localStorage.getItem('userType');
+
+            // Verificăm dacă e logat ca și client sau victim
+            if (token && (userType === 'client' || userType === 'victim')) {
+                next();
+            } else {
+                // Redirect către login-ul de client
+                next('/client/login');
+            }
+        }
+    },
+    // --- RUTELE PENTRU SALVATORI ---
+    {
+        path: '/rescuer',
+        name: 'RescuerHub',
+        component: RescuerHub
     },
     {
         path: '/login',
@@ -61,7 +89,6 @@ const routes = [
         name: 'ContactView',
         component: ContactView
     }
-
 ]
 
 const router = createRouter({

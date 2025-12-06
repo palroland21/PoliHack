@@ -30,12 +30,17 @@
 
         <router-link v-if="!store.isLoggedIn" to="/login" class="auth-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Sign In
+          Sign In for help
         </router-link>
 
         <div v-else class="logged-in-actions">
 
-          <router-link to="/dashboard" class="dashboard-btn">
+          <router-link v-if="currentUserType === 'client' || currentUserType === 'victim'" to="/client" class="map-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            My Request
+          </router-link>
+
+          <router-link v-else to="/dashboard" class="dashboard-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             Dashboard
           </router-link>
@@ -54,18 +59,27 @@
 </template>
 
 <script setup>
-  import { useRouter } from 'vue-router';
-  import { useMainStore } from '@/stores/mainStore';
+import { useRouter } from 'vue-router';
+import { useMainStore } from '@/stores/mainStore';
+import { computed } from 'vue';
 
-  const store = useMainStore();
-  const router = useRouter();
+const store = useMainStore();
+const router = useRouter();
 
-  const handleLogout = () => {
+// Luăm tipul utilizatorului direct din localStorage (sau poți să-l pui în Store dacă vrei să fie mai reactiv)
+// Folosim computed pentru a reactiona la schimbari daca store-ul se actualizeaza
+const currentUserType = computed(() => {
+  if (store.isLoggedIn) {
+    return localStorage.getItem('userType');
+  }
+  return null;
+});
+
+const handleLogout = () => {
   // 1. Stergem Token-ul si datele din LocalStorage
   localStorage.removeItem('token');
   localStorage.removeItem('userType');
   localStorage.removeItem('username');
-
   localStorage.removeItem('loggedUserId');
 
   // 2. Actualizam starea in Pinia Store
@@ -77,7 +91,7 @@
 </script>
 
 <style scoped>
-/* AICI RAMANE STILUL TAU ORIGINAL (E FOARTE BUN) */
+/* AICI RAMANE STILUL TAU ORIGINAL */
 .navbar {
   background-color: #f8f9fa;
   padding: 0;
@@ -160,6 +174,7 @@
 .auth-button:hover { background-color: #157347; transform: translateY(-1px); }
 .auth-button:active { transform: translateY(0); }
 
+/* Stil pentru Dashboard (Salvatori) */
 .dashboard-btn {
   display: flex; align-items: center; gap: 8px;
   background-color: #343a40; color: white;
@@ -168,6 +183,17 @@
   transition: background-color 0.2s;
 }
 .dashboard-btn:hover { background-color: #23272b; }
+
+/* Stil pentru Butonul Harta (Victime) */
+.map-btn {
+  display: flex; align-items: center; gap: 8px;
+  background-color: #dc3545; /* Rosu pentru alerta/victima */
+  color: white;
+  padding: 8px 16px; border-radius: 8px;
+  text-decoration: none; font-weight: 600; font-size: 14px;
+  transition: background-color 0.2s;
+}
+.map-btn:hover { background-color: #bb2d3b; }
 
 .logout-btn {
   display: flex; align-items: center; gap: 8px;
