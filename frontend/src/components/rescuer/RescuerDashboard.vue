@@ -73,48 +73,72 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 
 const store = useMainStore();
+const myOffers = ref([]); // Aici se vor stoca datele venite din backend
 
-// Mock Data - In realitate le iei din Firebase
-// Am folosit structura din imaginea ta
-const myOffers = ref([
-  {
-    id: 1,
-    type: 'transport',
-    title: 'Passenger Transport',
-    details: 'Available for urgent medical transport - Bucharest',
-    date: '15.01.2024'
-  },
-  {
-    id: 2,
-    type: 'housing',
-    title: 'Temporary Shelter',
-    details: '2 places available - Central Area Apartment',
-    date: '14.01.2024'
-  },
-  {
-    id: 3,
-    type: 'resources',
-    title: 'Water and Food',
-    details: 'Bottled water, canned food, blankets',
-    date: '13.01.2024'
-  }
-]);
+// Functie helper pentru text
+const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
-const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+// 1. FETCH DATA (Aici importam resursele din backend)
+const fetchOffers = async () => {
+  // Daca nu suntem logati, nu avem ce cauta aici
+  if (!store.token) return;
 
-const countType = (type) => {
-  return myOffers.value.filter(o => o.type === type).length;
-};
+  try {
+    const response = await fetch(`http://localhost:9090/rescuer/offers`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${store.token}`
+      }
+    });
 
-const deleteOffer = (id) => {
-  if(confirm("Are you sure you want to remove this resource?")) {
-    myOffers.value = myOffers.value.filter(o => o.id !== id);
+    if (response.ok) {
+      // Daca totul e ok, punem datele in variabila myOffers
+      // Vue va actualiza automat pagina cu cardurile
+      myOffers.value = await response.json();
+    } else {
+      console.error("Eroare la fetch:", response.status);
+      if (response.status === 403 || response.status === 401) {
+        // Token expirat sau invalid
+        store.logout();
+      }
+    }
+  } catch (error) {
+    console.error("Network error:", error);
   }
 };
+
+// 2. DELETE DATA
+const deleteOffer = async (id, type) => {
+  if(confirm("Esti sigur ca vrei sa stergi aceasta resursa?")) {
+    try {
+      await fetch(`http://localhost:8080/api/rescuer/offer/${type}/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${store.token}`
+        }
+      });
+
+      // Scoatem oferta din lista vizuala ca sa nu dam refresh la pagina
+      myOffers.value = myOffers.value.filter(o => !(o.id === id && o.type === type));
+
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
+  }
+};
+
+// Statistici
+const countType = (type) => myOffers.value.filter(o => o.type === type).length;
+
+// Cand pagina se incarca, apelam fetchOffers
+onMounted(() => {
+  fetchOffers();
+});
 </script>
 
 <style scoped>
