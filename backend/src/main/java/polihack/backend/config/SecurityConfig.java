@@ -17,6 +17,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/transport/**").permitAll()
+                        .requestMatchers("/housing/**").permitAll()
+                        .requestMatchers("/resources/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
