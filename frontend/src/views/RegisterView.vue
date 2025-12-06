@@ -37,7 +37,6 @@
       <form @submit.prevent="handleRegister" class="register-form">
 
         <div v-if="activeTab === 'individual'" class="form-section">
-
           <div class="row-2">
             <div class="form-group">
               <label>First Name</label>
@@ -63,11 +62,9 @@
             <label>Phone</label>
             <input type="tel" v-model="form.phone" placeholder="Phone number" class="input-field" />
           </div>
-
         </div>
 
         <div v-if="activeTab === 'company'" class="form-section">
-
           <div class="form-group">
             <label>Company Name</label>
             <input type="text" v-model="form.companyName" placeholder="Company Name LLC" class="input-field" />
@@ -109,7 +106,6 @@
             <label>Username</label>
             <input type="text" v-model="form.username" placeholder="Choose a username" class="input-field" />
           </div>
-
         </div>
 
         <div v-if="activeTab === 'individual'" class="form-group">
@@ -128,6 +124,11 @@
           </div>
         </div>
 
+        <div v-if="errorMessage" class="error-alert">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          {{ errorMessage }}
+        </div>
+
         <button type="submit" class="submit-btn">
           Create Account
         </button>
@@ -143,11 +144,12 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const activeTab = ref('individual');
+const errorMessage = ref('');
 
 const form = reactive({
   firstName: '',
@@ -166,11 +168,104 @@ const form = reactive({
   contactPerson: ''
 });
 
-const handleRegister = () => {
-  console.log(`Registering as ${activeTab.value}:`, form);
-  // Aici vei adauga logica de Firebase Register
-  // Simulare succes -> redirect catre Dashboard
-  router.push('/dashboard');
+onMounted(() => {
+  if (localStorage.getItem('token')) {
+    console.log("User logged in, redirecting from Register to Home.");
+    router.push('/');
+  }
+});
+
+const handleRegister = async () => {
+  // Clear previous errors
+  errorMessage.value = '';
+
+  // --- FRONTEND VALIDATIONS ---
+
+  // 1. Check for empty common fields
+  if (!form.username || !form.password || !form.email || !form.phone) {
+    errorMessage.value = "Please fill in all required fields (Username, Email, Phone, Password).";
+    return;
+  }
+
+  // 2. Password Match
+  if (form.password !== form.confirmPassword) {
+    errorMessage.value = "Passwords do not match!";
+    return;
+  }
+
+  let url = '';
+  let payload = {};
+
+  if (activeTab.value === 'individual') {
+    // --- INDIVIDUAL VALIDATIONS ---
+    if (!form.firstName || !form.lastName) {
+      errorMessage.value = "First Name and Last Name are required.";
+      return;
+    }
+    // CNP Validation
+    if (!form.personalId || form.personalId.length !== 13 || isNaN(form.personalId)) {
+      errorMessage.value = "Personal ID (CNP) must be exactly 13 numeric digits.";
+      return;
+    }
+
+    url = 'http://localhost:9090/auth/register';
+    payload = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      username: form.username,
+      pid: form.personalId,
+      telephone: form.phone,
+      email: form.email,
+      password: form.password,
+      assistanceTypeList: []
+    };
+
+  } else {
+    // --- COMPANY VALIDATIONS ---
+    if (!form.companyName || !form.cui || !form.address) {
+      errorMessage.value = "Company Name, CUI and Address are required.";
+      return;
+    }
+
+    url = 'http://localhost:9090/auth/company/register';
+    payload = {
+      companyName: form.companyName,
+      cui: form.cui,
+      registrationNumber: form.regNo,
+      headquartersAddress: form.address,
+      contactPerson: form.contactPerson,
+      phoneNumber: form.phone,
+      email: form.email,
+      username: form.username,
+      password: form.password
+    };
+  }
+
+  try {
+    // --- BACKEND REQUEST ---
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(`${activeTab.value} registration successful:`, data);
+      router.push('/login');
+    } else {
+      // Show Backend Error
+      const errorText = await response.text();
+      errorMessage.value = errorText || 'Registration failed. Please try again.';
+      console.error('Registration failed:', errorText);
+    }
+    // (Am sters onMounted de aici pentru ca nu avea ce cauta in interiorul functiei)
+  } catch (error) {
+    console.error('Network error:', error);
+    errorMessage.value = 'Connection error. Check if the server is running on port 9090.';
+  }
 };
 </script>
 
@@ -183,10 +278,9 @@ const handleRegister = () => {
   background-color: #f8f9fa;
   padding: 40px 20px;
   font-family: 'Segoe UI', sans-serif;
-  position: relative; /* Necesar pentru butonul absolut */
+  position: relative;
 }
 
-/* STIL BUTON BACK (Stanga Sus) */
 .back-btn-absolute {
   position: absolute;
   top: 20px;
@@ -216,7 +310,6 @@ const handleRegister = () => {
   margin-top: 20px;
 }
 
-/* LOGO HEADER */
 .logo-header {
   display: flex;
   justify-content: center;
@@ -224,7 +317,7 @@ const handleRegister = () => {
 }
 
 .logo-img {
-  height: 60px; /* Logo un pic mai mare pe register */
+  height: 60px;
   width: auto;
   object-fit: contain;
 }
@@ -242,7 +335,6 @@ h1 {
   margin-bottom: 30px;
 }
 
-/* TABS STYLING */
 .tabs-container {
   display: flex;
   background-color: #f1f3f5;
@@ -273,7 +365,6 @@ h1 {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* FORM STYLING */
 .form-group {
   margin-bottom: 15px;
 }
@@ -302,24 +393,40 @@ label {
   background-color: white;
 }
 
-/* Grid pentru campuri pe acelasi rand */
 .row-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
 
+/* ERROR MESSAGE STYLING */
+.error-alert {
+  background-color: #ffeaea;
+  color: #d63301;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border: 1px solid #ffcccc;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
 .submit-btn {
   width: 100%;
   padding: 14px;
-  background-color: #198754; /* Verdele ResQ */
+  background-color: #198754;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 10px;
   transition: background 0.3s;
 }
 

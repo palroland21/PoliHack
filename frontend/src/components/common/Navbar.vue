@@ -54,19 +54,30 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { useMainStore } from '@/stores/mainStore'; // Asigura-te ca path-ul e corect
+  import { useRouter } from 'vue-router';
+  import { useMainStore } from '@/stores/mainStore';
 
-const store = useMainStore();
-const router = useRouter();
+  const store = useMainStore();
+  const router = useRouter();
 
-const handleLogout = () => {
+  const handleLogout = () => {
+  // 1. Stergem Token-ul si datele din LocalStorage
+  localStorage.removeItem('token');
+  localStorage.removeItem('userType');
+  localStorage.removeItem('username');
+
+  localStorage.removeItem('loggedUserId');
+
+  // 2. Actualizam starea in Pinia Store
   store.logout();
+
+  // 3. Redirectionam catre Home
   router.push('/');
 };
 </script>
 
 <style scoped>
+/* AICI RAMANE STILUL TAU ORIGINAL (E FOARTE BUN) */
 .navbar {
   background-color: #f8f9fa;
   padding: 0;
@@ -105,7 +116,6 @@ const handleLogout = () => {
 }
 .nav-link:hover { color: #198754; }
 
-/* --- Container Actiuni --- */
 .navbar-actions {
   display: flex;
   align-items: center;
@@ -118,13 +128,12 @@ const handleLogout = () => {
   gap: 15px;
 }
 
-/* --- BUTON DONATE (ROSU) --- */
 .donate-button {
   display: flex;
   align-items: center;
   gap: 8px;
   background-color: white;
-  color: #dc3545; /* Rosu inima */
+  color: #dc3545;
   border: 2px solid #dc3545;
   padding: 8px 20px;
   border-radius: 8px;
@@ -140,7 +149,6 @@ const handleLogout = () => {
   transform: translateY(-1px);
 }
 
-/* --- BUTON SIGN IN (VERDE) --- */
 .auth-button {
   display: flex; align-items: center; gap: 8px;
   background-color: #198754; color: white;
@@ -152,7 +160,6 @@ const handleLogout = () => {
 .auth-button:hover { background-color: #157347; transform: translateY(-1px); }
 .auth-button:active { transform: translateY(0); }
 
-/* --- BUTON DASHBOARD (GRI) --- */
 .dashboard-btn {
   display: flex; align-items: center; gap: 8px;
   background-color: #343a40; color: white;
@@ -162,7 +169,6 @@ const handleLogout = () => {
 }
 .dashboard-btn:hover { background-color: #23272b; }
 
-/* --- BUTON LOGOUT (MINIMAL) --- */
 .logout-btn {
   display: flex; align-items: center; gap: 8px;
   background-color: transparent;

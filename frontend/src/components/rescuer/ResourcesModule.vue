@@ -89,6 +89,7 @@
             v-model="form.quantity"
             placeholder="ex: 50 bottles of water, 20 food packs"
             class="input-field"
+            required
         />
       </div>
 
@@ -99,6 +100,7 @@
             v-model="form.location"
             placeholder="ex: Main Street no. 10, Downtown"
             class="input-field"
+            required
         />
       </div>
 
@@ -111,16 +113,38 @@
         ></textarea>
       </div>
 
-      <button type="submit" class="submit-btn">
-        Register Offer →
+      <button
+          type="submit"
+          class="submit-btn"
+          :disabled="isLoading"
+      >
+        <span v-if="!isLoading">Register Offer →</span>
+        <span v-else>Sending...</span>
       </button>
+
+      <div class="message-container">
+        <p v-if="successMessage" class="success-text">
+          ✅ {{ successMessage }}
+        </p>
+
+        <p v-if="errorMessage" class="error-text">
+          ⚠️ {{ errorMessage }}
+        </p>
+      </div>
 
     </form>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import axios from 'axios';
+
+// State variables for communication
+const isLoading = ref(false);
+const errorMessage = ref('');
+const successMessage = ref('');
+
 
 const form = reactive({
   selectedResources: [],
@@ -137,16 +161,91 @@ const toggleResource = (type) => {
   }
 };
 
-const submitOffer = () => {
-  console.log("Submitting Resources Offer:", form);
-  alert("Resources offer registered! (Check console)");
+// Funcții auxiliare pentru autentificare (copiate din modulele anterioare)
+const getLoggedUserId = () => {
+  const userId = localStorage.getItem('loggedUserId');
+  return (userId && !isNaN(Number(userId))) ? Number(userId) : 0;
+};
+
+const submitOffer = async () => {
+  errorMessage.value = '';
+  successMessage.value = '';
+
+  const loggedUserId = getLoggedUserId();
+  const token = localStorage.getItem('token');
+
+  // 1. Verificare Autentificare (Soluția 1)
+  if (loggedUserId === 0 || !token) {
+    errorMessage.value = "User not authenticated. Please log in before submitting an offer.";
+    return;
+  }
+
+  // 2. Validare simplă
+  if (form.selectedResources.length === 0 || !form.quantity || !form.location) {
+    errorMessage.value = "Please select at least one resource type and complete Quantity and Location fields.";
+    return;
+  }
+
+  isLoading.value = true;
+
+  // 3. Prepare object for Backend (DTO)
+  // Ne asigurăm că trimitem un Array de String-uri (UPPERCASE cu underscore) pentru Set<ResourceType>
+  const requestPayload = {
+    // Alinierea numelui câmpului la DTO-ul backend: resourceTypes
+    resourceTypes: form.selectedResources.map(resource => {
+      // Logică de mapare din frontend (ex: 'kids' -> 'FOR_KIDS')
+      if (resource === 'kids') return 'FOR_KIDS';
+      if (resource === 'meds') return 'MEDS';
+      if (resource === 'clothes') return 'CLOTHES';
+      // Restul (water, food, other) se mapează direct la UPPERCASE
+      return resource.toUpperCase().replace(/\s/g, '_');
+    }),
+    quantity: form.quantity,
+    pickupLocation: form.location, // Numele câmpului este aliniat cu DTO
+    additionalDetails: form.details, // Numele câmpului este aliniat cu DTO
+    rescuerId: loggedUserId
+  };
+
+  try {
+    // 4. Axios call: Adaugă Authorization Header (pentru a preveni 403 Forbidden)
+    const response = await axios.post('http://localhost:9090/resources/add', requestPayload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    console.log("Resource Offer Success:", response.data);
+
+    successMessage.value = "Resource offer successfully registered!";
+
+    // 5. Reset form
+    form.selectedResources = [];
+    form.quantity = '';
+    form.location = '';
+    form.details = '';
+
+  } catch (error) {
+    console.error("Technical error details:", error);
+    if (error.response && error.response.status === 403) {
+      errorMessage.value = "Access denied. Please log in again.";
+    } else {
+      errorMessage.value = "Something went wrong. Check if the server is running or if data format is correct.";
+    }
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
 <style scoped>
+/* Stilurile rămân neschimbate */
+
 .resources-container {
   padding: 10px;
   animation: fadeIn 0.3s ease-in-out;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .header-center {
@@ -265,8 +364,8 @@ const submitOffer = () => {
   margin-top: 10px;
   width: 100%;
   padding: 15px;
-  background-color: #81c784;
-  color: white;
+  background-color: #ffc107; /* Schimb culoarea butonului la galben/portocaliu, ca tema Resources */
+  color: #333;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -275,8 +374,35 @@ const submitOffer = () => {
   transition: background 0.3s;
 }
 
-.submit-btn:hover {
-  background-color: #66bb6a;
+.submit-btn:hover:not(:disabled) {
+  background-color: #ffad33;
+}
+
+.submit-btn:disabled {
+  background-color: #fce3a2;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.message-container {
+  text-align: center;
+  margin-top: 10px;
+  min-height: 24px;
+}
+
+.error-text {
+  color: #dc3545;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.success-text {
+  color: #198754;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  animation: fadeIn 0.5s;
 }
 
 @media (max-width: 500px) {
