@@ -7,6 +7,8 @@ import RegisterView from "@/views/RegisterView.vue";
 import DonationView from "../views/donationView/DonationView.vue";
 import SuccessView from "../views/donationView/SuccessView.vue";
 import RescuerDashboard from "@/components/rescuer/RescuerDashboard.vue";
+import AboutView from "@/views/AboutView.vue";
+import ContactView from "@/views/ContactView.vue";
 
 import VictimLogin from "@/components/victim/VictimLogin.vue";
 import VictimRegister from "@/components/victim/VictimRegister.vue";
@@ -76,6 +78,16 @@ const routes = [
         path: '/dashboard',
         name: 'RescuerDashboard',
         component: RescuerDashboard
+    },
+    {
+        path: '/about',
+        name: 'AboutView',
+        component: AboutView
+    },
+    {
+        path: '/contact',
+        name: 'ContactView',
+        component: ContactView
     }
 ]
 
