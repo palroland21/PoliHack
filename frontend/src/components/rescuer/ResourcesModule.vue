@@ -93,7 +93,7 @@
       </div>
 
       <div class="form-group">
-        <label>Pickup / Delivery Location</label>
+        <label>Pickup Location</label>
         <input
             type="text"
             v-model="form.location"
