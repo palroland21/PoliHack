@@ -21,6 +21,8 @@ public class SecurityConfig {
                         .requestMatchers("/resources/**").permitAll()
                         .requestMatchers("/auth/company/**").permitAll()
                         .requestMatchers("/payment/**").permitAll()
+                        .requestMatchers("/order/**").permitAll()
+                        .requestMatchers("/auth/client/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
