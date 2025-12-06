@@ -14,10 +14,10 @@
           <router-link to="/" class="nav-link">Home</router-link>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">About</a>
+          <router-link to="/about" class="nav-link">About</router-link>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">Contact</a>
+          <router-link to="/contact" class="nav-link">Contact</router-link>
         </li>
       </ul>
 
