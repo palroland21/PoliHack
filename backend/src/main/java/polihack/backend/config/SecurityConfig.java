@@ -20,6 +20,7 @@ public class SecurityConfig {
                         .requestMatchers("/housing/**").permitAll()
                         .requestMatchers("/resources/**").permitAll()
                         .requestMatchers("/auth/company/**").permitAll()
+                        .requestMatchers("/payment/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
