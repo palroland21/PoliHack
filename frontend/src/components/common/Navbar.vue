@@ -111,6 +111,7 @@ export default {
   color: #198754;
 }
 
+
 /* --- Stiluri Noi pentru containerul de actiuni --- */
 .navbar-actions {
   display: flex;
