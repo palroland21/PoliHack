@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/payment/**").permitAll()
                         .requestMatchers("/api/triage/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/rescuer/**").permitAll()
                         .anyRequest().permitAll()
                 );
 

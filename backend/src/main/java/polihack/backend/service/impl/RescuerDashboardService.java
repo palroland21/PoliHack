@@ -1,6 +1,5 @@
 package polihack.backend.service.impl;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import polihack.backend.dto.response.RescuerOfferDTO;
 import polihack.backend.model.Rescuer;
@@ -9,7 +8,6 @@ import polihack.backend.repository.RescuerRepository;
 import polihack.backend.repository.ResourceRepository;
 import polihack.backend.repository.TransportRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,70 +19,73 @@ public class RescuerDashboardService {
     private final ResourceRepository resourceRepo;
     private final RescuerRepository rescuerRepo;
 
-    public RescuerDashboardService(TransportRepository transportRepo, HousingRepository housingRepo,
-                                   ResourceRepository resourceRepo, RescuerRepository rescuerRepo) {
+    public RescuerDashboardService(TransportRepository transportRepo, HousingRepository housingRepo, ResourceRepository resourceRepo, RescuerRepository rescuerRepo) {
         this.transportRepo = transportRepo;
         this.housingRepo = housingRepo;
         this.resourceRepo = resourceRepo;
         this.rescuerRepo = rescuerRepo;
     }
 
-    public List<RescuerOfferDTO> getMyOffers() {
-        // 1. Get username from security context
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+    // --- 1. DOAR TRANSPORT ---
+    // Acum primim rescuerId ca parametru
+    public List<RescuerOfferDTO> getTransportOffers(Long rescuerId) {
+        // Logica exact ca la colegul tau: cautam dupa ID
+        Rescuer rescuer = rescuerRepo.findById(rescuerId)
+                .orElseThrow(() -> new RuntimeException("Rescuer not found with id: " + rescuerId));
 
-        // 2. Find Rescuer ID from DB
-        Rescuer currentRescuer = rescuerRepo.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("Rescuer not found"));
-
-        Long rescuerId = currentRescuer.getId();
-        List<RescuerOfferDTO> combinedList = new ArrayList<>();
-
-        //3. Map TRANSPORT
-        combinedList.addAll(transportRepo.findAll().stream()
-                .filter(t -> t.getRescuer().getId().equals(rescuerId))
+        return transportRepo.findAll().stream()
+                .filter(t -> t.getRescuer().getId().equals(rescuer.getId()))
                 .map(t -> new RescuerOfferDTO(
                         t.getId(),
                         "transport",
-                        "Transport: " + t.getVehicleType().toString(),
-                        t.getCapacity() + " locuri | Dest: " + t.getDestinations(),
+                        "Transport: " + t.getVehicleType(),
+                        t.getCapacity() + " locuri | " + t.getDestinations(),
                         t.getAvailabilityStatus().toString()
                 ))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+    }
 
-        //4. Map HOUSING
-        combinedList.addAll(housingRepo.findAll().stream()
-                .filter(h -> h.getRescuer().getId().equals(rescuerId))
+    // --- 2. DOAR CAZARE ---
+    public List<RescuerOfferDTO> getHousingOffers(Long rescuerId) {
+        Rescuer rescuer = rescuerRepo.findById(rescuerId)
+                .orElseThrow(() -> new RuntimeException("Rescuer not found with id: " + rescuerId));
+
+        return housingRepo.findAll().stream()
+                .filter(h -> h.getRescuer().getId().equals(rescuer.getId()))
                 .map(h -> new RescuerOfferDTO(
                         h.getId(),
                         "housing",
-                        "Cazare: " + h.getHousingType().toString(),
-                        "Capacitate: " + h.getCapacity() + " pers | " + h.getAddress(),
-                        "Perioada: " + h.getAvailablePeriod()
+                        "Cazare: " + h.getHousingType(),
+                        "Capacitate: " + h.getCapacity() + " | " + h.getAddress(),
+                        h.getAvailablePeriod()
                 ))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+    }
 
-        // 5. Map RESOURCES
-        combinedList.addAll(resourceRepo.findAll().stream()
-                .filter(r -> r.getRescuer().getId().equals(rescuerId))
+    // --- 3. DOAR RESURSE ---
+    public List<RescuerOfferDTO> getResourceOffers(Long rescuerId) {
+        Rescuer rescuer = rescuerRepo.findById(rescuerId)
+                .orElseThrow(() -> new RuntimeException("Rescuer not found with id: " + rescuerId));
+
+        return resourceRepo.findAll().stream()
+                .filter(r -> r.getRescuer().getId().equals(rescuer.getId()))
                 .map(r -> new RescuerOfferDTO(
                         r.getId(),
                         "resources",
-                        "Resurse: " + r.getResourceTypes().toString(),
-                        "Cantitate: " + r.getQuantity() + " | Locatie: " + r.getPickupLocation(),
+                        "Resurse",
+                        r.getQuantity() + " | " + r.getPickupLocation(),
                         "Activ"
                 ))
-                .collect(Collectors.toList()));
-
-        return combinedList;
+                .collect(Collectors.toList());
     }
 
+    // Stergerea ramane la fel (nu depinde de utilizator direct, ci de ID-ul ofertei)
     public void deleteOffer(Long id, String type) {
         switch (type) {
             case "transport" -> transportRepo.deleteById(id);
             case "housing" -> housingRepo.deleteById(id);
             case "resources" -> resourceRepo.deleteById(id);
-            default -> throw new IllegalArgumentException("Tip necunoscut: " + type);
+            default -> throw new IllegalArgumentException("Invalid type");
         }
     }
 }

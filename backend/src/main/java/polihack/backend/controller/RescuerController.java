@@ -1,16 +1,13 @@
 package polihack.backend.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import polihack.backend.dto.response.RescuerOfferDTO;
-import polihack.backend.service.impl.RescuerDashboardService; // Asigura-te ca importi service-ul nou
-
+import polihack.backend.service.impl.RescuerDashboardService;
 import java.util.List;
 
 @RestController
 @RequestMapping("/rescuer")
-@CrossOrigin(origins = "http://localhost:5173") // Permite accesul din Vue
 public class RescuerController {
 
     private final RescuerDashboardService dashboardService;
@@ -19,13 +16,30 @@ public class RescuerController {
         this.dashboardService = dashboardService;
     }
 
-    // 1. GET OFFERS (Fara parametru, userul e luat din Token in service)
-    @GetMapping("/offers")
-    public ResponseEntity<List<RescuerOfferDTO>> getMyOffers() {
-        return ResponseEntity.ok(dashboardService.getMyOffers());
+    // 1. GET TRANSPORT -> Acum cere ID-ul rescuer-ului in URL
+    // Exemplu apel: GET /rescuer/transport/1
+    @GetMapping("/transport/{rescuerId}")
+    public ResponseEntity<List<RescuerOfferDTO>> getTransports(@PathVariable Long rescuerId) {
+        // Trimitem ID-ul mai departe catre Service
+        return ResponseEntity.ok(dashboardService.getTransportOffers(rescuerId));
     }
 
-    // 2. DELETE OFFER (Are nevoie de ID si TIP)
+    // 2. GET HOUSING -> La fel, cere ID-ul
+    // Exemplu apel: GET /rescuer/housing/1
+    @GetMapping("/housing/{rescuerId}")
+    public ResponseEntity<List<RescuerOfferDTO>> getHousing(@PathVariable Long rescuerId) {
+        return ResponseEntity.ok(dashboardService.getHousingOffers(rescuerId));
+    }
+
+    // 3. GET RESOURCES
+    // Exemplu apel: GET /rescuer/resources/1
+    @GetMapping("/resources/{rescuerId}")
+    public ResponseEntity<List<RescuerOfferDTO>> getResources(@PathVariable Long rescuerId) {
+        return ResponseEntity.ok(dashboardService.getResourceOffers(rescuerId));
+    }
+
+    // 4. DELETE OFFER
+    // Aici ramane la fel, stergem oferta dupa ID-ul ei, nu conteaza rescuer-ul
     @DeleteMapping("/offer/{type}/{id}")
     public ResponseEntity<Void> deleteOffer(@PathVariable String type, @PathVariable Long id) {
         dashboardService.deleteOffer(id, type);
