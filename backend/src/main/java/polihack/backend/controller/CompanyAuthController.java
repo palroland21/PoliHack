@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import polihack.backend.dto.request.LoginRequest;
-import polihack.backend.dto.response.LoginResponse;
+import polihack.backend.dto.response.LoginResponse; // Asigură-te că folosești clasa actualizată
 import polihack.backend.dto.response.CompanyRegisterResponse;
 import polihack.backend.model.Company;
 import polihack.backend.security.JwtUtil;
@@ -52,7 +52,9 @@ public class CompanyAuthController {
             String token = jwtUtil.generateToken(company.getUsername(), company.getPassword());
 
             System.out.println("Company " + company.getUsername() + " logged successfully!");
-            return ResponseEntity.ok(new LoginResponse(token));
+
+            // MODIFICARE: Returnează token-ul ȘI ID-ul
+            return ResponseEntity.ok(new LoginResponse(token, company.getId()));
         }
 
         return ResponseEntity.status(401).body("Invalid credentials!");

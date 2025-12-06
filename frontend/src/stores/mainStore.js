@@ -1,37 +1,26 @@
-// src/stores/mainStore.js
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
-export const useMainStore = defineStore('main', {
-    state: () => ({
-        // Date existente
-        userRole: null, // 'victim' sau 'rescuer'
-        location: null,
+export const useMainStore = defineStore('main', () => {
+    // Verificam la start daca exista token
+    const isLoggedIn = ref(!!localStorage.getItem('token'));
+    const username = ref(localStorage.getItem('username') || '');
 
-        // Date NOI pentru Autentificare
-        isLoggedIn: false,
-        user: null // Aici vom stoca username-ul sau datele userului
-    }),
-
-    actions: {
-        // Actiuni existente
-        setUserRole(role) {
-            this.userRole = role
-        },
-        setLocation(location) {
-            this.location = location
-        },
-
-        // Actiuni NOI pentru Login/Logout
-        login(username) {
-            this.isLoggedIn = true;
-            this.user = username;
-        },
-
-        logout() {
-            this.isLoggedIn = false;
-            this.user = null;
-            // Optional: Putem reseta si rolul la delogare
-            // this.userRole = null;
-        }
+    // Actiune Login
+    function login(user) {
+        isLoggedIn.value = true;
+        username.value = user;
     }
-})
+
+    // Actiune Logout
+    function logout() {
+        isLoggedIn.value = false;
+        username.value = '';
+        // (Optional) Putem sterge si aici din localStorage pentru siguranta dubla
+        localStorage.removeItem('token');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('username');
+    }
+
+    return { isLoggedIn, username, login, logout };
+});

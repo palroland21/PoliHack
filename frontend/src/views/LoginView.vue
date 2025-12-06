@@ -12,18 +12,42 @@
         <img src="/ResQ.png" alt="ResQ Logo" class="logo-img">
       </div>
 
-      <h1>Rescuer Login</h1>
-      <p class="subtitle">Log in to manage your resources</p>
+      <h1>Welcome Back</h1>
+      <p class="subtitle">Login to manage your resources</p>
 
-      <form @submit.prevent="handleLogin" class="login-form">
+      <div class="tabs-container">
+        <button
+            class="tab-btn"
+            :class="{ active: activeTab === 'individual' }"
+            @click="setActiveTab('individual')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Individual
+        </button>
+        <button
+            class="tab-btn"
+            :class="{ active: activeTab === 'company' }"
+            @click="setActiveTab('company')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Company
+        </button>
+      </div>
+
+      <form @submit.prevent="submitLogin" class="login-form">
+
+        <div v-if="errorMessage" class="error-alert">
+          {{ errorMessage }}
+        </div>
 
         <div class="form-group">
           <label>Username</label>
           <input
               type="text"
-              v-model="username"
+              v-model="loginForm.username"
               placeholder="Enter your username"
               class="input-field"
+              required
           />
         </div>
 
@@ -31,14 +55,15 @@
           <label>Password</label>
           <input
               type="password"
-              v-model="password"
+              v-model="loginForm.password"
               placeholder="Enter your password"
               class="input-field"
+              required
           />
         </div>
 
         <button type="submit" class="login-btn">
-          → Login
+          Login as {{ activeTab === 'individual' ? 'Individual' : 'Company' }}
         </button>
 
       </form>
@@ -52,31 +77,95 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router'; // 1. Importam si useRoute
-import { useMainStore } from '@/stores/mainStore';
+import { ref, reactive, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useMainStore } from '@/stores/mainStore'; // Am schimbat în 'useMainStore' bazat pe fișierul inițial
 
 const router = useRouter();
-const route = useRoute(); // 2. Initializam route (pentru a citi parametrii din URL)
-const store = useMainStore();
+const route = useRoute();
+const store = useMainStore(); // Folosim store-ul principal
 
-const username = ref('');
-const password = ref('');
+const activeTab = ref('individual');
+const errorMessage = ref('');
 
-const handleLogin = () => {
-  console.log("Logging in...", username.value);
-  store.login(username.value);
+// O singură structură reactivă pentru datele din formular
+const loginForm = reactive({
+  username: '',
+  password: ''
+});
 
-  // 3. LOGICA NOUA DE REDIRECTIONARE
-  // Verificam daca in URL exista ?redirect=...
-  const redirectPath = route.query.redirect || '/';
+onMounted(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    console.log("User already logged in. Redirecting...");
+    router.push('/');
+  }
+});
 
-  // Daca exista redirect, mergem acolo. Daca nu (cazul Navbar), mergem la '/' (Home)
-  router.push(redirectPath);
+const setActiveTab = (tab) => {
+  activeTab.value = tab;
+  loginForm.username = ''; // Resetăm câmpurile la schimbarea tab-ului
+  loginForm.password = '';
+  errorMessage.value = '';
+};
+
+
+const submitLogin = async () => {
+  errorMessage.value = '';
+
+  const loginUrl = activeTab.value === 'individual'
+      ? 'http://localhost:9090/auth/login'
+      : 'http://localhost:9090/auth/company/login';
+
+  try {
+    const response = await fetch(loginUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginForm)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      // ==========================================================
+      // VERIFICARE: Acum că backend-ul returnează ID-ul în câmpul 'id'
+      // ==========================================================
+      const userId = data.id || data.userId;
+
+      if (userId) {
+        localStorage.setItem('loggedUserId', userId); // SALVAREA ID-ului (Fix-ul principal)
+        console.log(`User ID ${userId} saved.`);
+      } else {
+        console.warn("User ID not found in the server response data. Check backend LoginResponse DTO.");
+      }
+
+      // Salvarea celorlalte date necesare
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userType', activeTab.value);
+      localStorage.setItem('username', loginForm.username);
+
+      // Actualizarea stării în Pinia (am presupus că folosești store.login din fisierul vechi)
+      if(store.login) {
+        store.login(loginForm.username);
+      }
+
+      const redirectPath = route.query.redirect || '/dashboard';
+      router.push(redirectPath);
+
+    } else {
+      errorMessage.value = 'Invalid username or password.';
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    errorMessage.value = 'Server connection failed. Please try again later.';
+  }
 };
 </script>
 
 <style scoped>
+/* Stilurile rămân neschimbate */
+/* ... */
+
 .login-container {
   min-height: 100vh;
   display: flex;
@@ -85,10 +174,9 @@ const handleLogin = () => {
   background-color: #f8f9fa;
   font-family: 'Segoe UI', sans-serif;
   padding: 20px;
-  position: relative; /* Necesar pentru pozitionarea butonului back */
+  position: relative;
 }
 
-/* STIL BUTON BACK (Stanga Sus) */
 .back-btn-absolute {
   position: absolute;
   top: 20px;
@@ -115,11 +203,9 @@ const handleLogin = () => {
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   width: 100%;
   max-width: 450px;
-  text-align: center;
   margin-top: 20px;
 }
 
-/* LOGO STYLES */
 .logo-header {
   display: flex;
   justify-content: center;
@@ -127,24 +213,57 @@ const handleLogin = () => {
 }
 
 .logo-img {
-  height: 80px; /* Dimensiune logo */
+  height: 80px;
   width: auto;
   object-fit: contain;
 }
 
 h1 {
+  text-align: center;
   margin: 0 0 10px 0;
   color: #333;
   font-size: 1.8rem;
 }
 
 .subtitle {
+  text-align: center;
   color: #666;
   margin-bottom: 30px;
 }
 
+/* TABS STYLING (Identic cu Register) */
+.tabs-container {
+  display: flex;
+  background-color: #f1f3f5;
+  padding: 5px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background-color: white;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* FORM STYLES */
 .form-group {
-  text-align: left;
   margin-bottom: 20px;
 }
 
@@ -171,10 +290,22 @@ label {
   background-color: white;
 }
 
+/* ERROR MESSAGE */
+.error-alert {
+  background-color: #ffeaea;
+  color: #d63301;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  border: 1px solid #ffcccc;
+}
+
 .login-btn {
   width: 100%;
   padding: 14px;
-  background-color: #198754; /* Verdele ResQ */
+  background-color: #198754;
   color: white;
   border: none;
   border-radius: 8px;
@@ -190,6 +321,7 @@ label {
 }
 
 .card-footer {
+  text-align: center;
   margin-top: 25px;
   font-size: 0.95rem;
   color: #666;
