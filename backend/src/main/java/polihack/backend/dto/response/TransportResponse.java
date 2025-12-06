@@ -1,7 +1,5 @@
 package polihack.backend.dto.response;
 
-import jakarta.persistence.*;
-import polihack.backend.model.Rescuer;
 import polihack.backend.model.enums.AvailabilityStatus;
 import polihack.backend.model.enums.VehicleType;
 
