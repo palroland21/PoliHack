@@ -30,7 +30,8 @@ public class SecurityConfig {
                         .requestMatchers("/order/**").permitAll()
                         .requestMatchers("/auth/client/**").permitAll()
                         .requestMatchers("/rescuer/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/medical/**").permitAll()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();
