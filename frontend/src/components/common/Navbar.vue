@@ -22,25 +22,46 @@
       </ul>
 
       <div class="navbar-actions">
-        <router-link to="/donate" class="donate-button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-          Donate
-        </router-link>
 
-        <router-link to="/login" class="auth-button">
+        <router-link v-if="!store.isLoggedIn" to="/login" class="auth-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           Sign In
         </router-link>
+
+        <div v-else class="logged-in-actions">
+
+          <router-link to="/dashboard" class="dashboard-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Dashboard
+          </router-link>
+
+          <button @click="handleLogout" class="logout-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Log Out
+          </button>
+
+        </div>
+
       </div>
 
     </div>
   </nav>
 </template>
 
-<script>
-export default {
-  name: 'Navbar'
-}
+<script setup>
+import { useRouter } from 'vue-router';
+import { useMainStore } from '@/stores/mainStore';
+
+const store = useMainStore();
+const router = useRouter();
+
+const handleLogout = () => {
+  // 1. Apelam actiunea de logout din Pinia
+  store.logout();
+
+  // 2. Redirectionam catre Home (sau Login)
+  router.push('/');
+};
 </script>
 
 <style scoped>
@@ -64,104 +85,62 @@ export default {
   height: 80px;
 }
 
-.navbar-brand {
-  text-decoration: none;
-}
+.navbar-brand { text-decoration: none; }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { height: 40px; width: auto; object-fit: contain; }
+.logo-text { color: #333; font-weight: 700; font-size: 24px; }
 
-/* Image Logo Style */
-.logo-icon {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-}
-
-.logo-text {
-  color: #333;
-  font-weight: 700;
-  font-size: 24px;
-}
-
-.nav-menu {
-  display: flex;
-  list-style: none;
-  gap: 40px;
-  margin: 0;
-  padding: 0;
-}
-
-@media (max-width: 768px) {
-  .nav-menu { display: none; }
-}
+.nav-menu { display: flex; list-style: none; gap: 40px; margin: 0; padding: 0; }
+@media (max-width: 768px) { .nav-menu { display: none; } }
 
 .nav-link {
-  color: #6c757d;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 16px;
-  transition: color 0.3s ease;
+  color: #6c757d; text-decoration: none; font-weight: 500; font-size: 16px; transition: color 0.3s ease;
 }
+.nav-link:hover { color: #198754; }
 
-.nav-link:hover {
-  color: #198754;
-}
-
-/* --- Stiluri Noi pentru containerul de actiuni --- */
-.navbar-actions {
+/* Wrapper pentru actiunile cand esti logat */
+.logged-in-actions {
   display: flex;
   align-items: center;
-  gap: 15px; /* Spatiu intre butoane */
+  gap: 15px;
 }
 
-/* --- Butonul de Donatie --- */
-.donate-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: white;
-  color: #dc3545; /* Rosu/Roz pentru inima */
-  border: 2px solid #dc3545;
-  padding: 8px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 15px;
-  transition: all 0.2s;
-}
-
-.donate-button:hover {
-  background-color: #dc3545;
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* Green Auth Button style */
+/* SIGN IN BUTTON (Verde) */
 .auth-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #198754;
-  color: white;
-  padding: 10px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
+  display: flex; align-items: center; gap: 8px;
+  background-color: #198754; color: white;
+  padding: 10px 24px; border-radius: 8px;
+  text-decoration: none; font-weight: 600; font-size: 15px;
   transition: background-color 0.2s, transform 0.1s;
   box-shadow: 0 4px 6px rgba(25, 135, 84, 0.2);
 }
+.auth-button:hover { background-color: #157347; transform: translateY(-1px); }
+.auth-button:active { transform: translateY(0); }
 
-.auth-button:hover {
-  background-color: #157347;
-  transform: translateY(-1px);
+/* DASHBOARD BUTTON (Gri Inchis) */
+.dashboard-btn {
+  display: flex; align-items: center; gap: 8px;
+  background-color: #343a40; color: white;
+  padding: 8px 16px; border-radius: 8px;
+  text-decoration: none; font-weight: 600; font-size: 14px;
+  transition: background-color 0.2s;
 }
+.dashboard-btn:hover { background-color: #23272b; }
 
-.auth-button:active {
-  transform: translateY(0);
+/* LOGOUT BUTTON (Rosu Outline / Minimal) */
+.logout-btn {
+  display: flex; align-items: center; gap: 8px;
+  background-color: transparent;
+  color: #dc3545; /* Rosu */
+  border: 1px solid #dc3545;
+  padding: 8px 16px; border-radius: 8px;
+  font-weight: 600; font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.logout-btn:hover {
+  background-color: #dc3545;
+  color: white;
 }
 </style>
