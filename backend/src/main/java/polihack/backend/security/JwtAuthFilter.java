@@ -9,13 +9,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
 
-@Component
+// @Component eltávolítva - nem akarjuk, hogy automatikusan fusson
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -32,7 +31,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/auth/register") || path.startsWith("/auth/login")) {
+        // Ezeket az útvonalakat átengedjük JWT nélkül
+        if (path.startsWith("/auth/") ||
+            path.startsWith("/api/triage/") ||
+            path.startsWith("/transport/") ||
+            path.startsWith("/housing/") ||
+            path.startsWith("/resources/") ||
+            path.startsWith("/payment/")) {
             filterChain.doFilter(request, response);
             return;
         }
