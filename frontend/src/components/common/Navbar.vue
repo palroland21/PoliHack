@@ -3,23 +3,19 @@
     <div class="navbar-container">
       <!-- Logo and brand -->
       <div class="navbar-brand">
-        <div class="logo">
-          <img src="/ResQ.png" alt="ResQ Logo" class="logo-icon">
-          <span class="logo-text">ResQ</span>
-        </div>
+        <img src="/ResQ.png" alt="ResQ Logo" class="logo-img">
       </div>
 
       <!-- Navigation menu -->
       <ul class="nav-menu">
         <li class="nav-item">
           <router-link to="/" class="nav-link" @click="handleNavClick">
-            Home
+            Acasă
           </router-link>
         </li>
         <li class="nav-item">
           <a href="#about" class="nav-link" @click="handleNavClick">
-            About
-          </a>
+            Despre</a>
         </li>
         <li class="nav-item">
           <a href="#contact" class="nav-link" @click="handleNavClick">
@@ -27,8 +23,6 @@
           </a>
         </li>
       </ul>
-
-
     </div>
   </nav>
 </template>
@@ -69,39 +63,16 @@ export default {
 .navbar-brand {
   display: flex;
   align-items: center;
-  text-decoration: none;
-  color: white;
-  font-weight: 700;
-  font-size: 24px;
+  margin-right: 40px;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: default;
-  transition: none;
-}
-
-.logo:hover {
-  transform: none;
-}
-
-.logo-icon {
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  width: 40px;
-  height: 40px;
+.logo-img {
+  width: 50px;
+  height: 50px;
   object-fit: contain;
+  display: block;
 }
 
-.logo-text {
-  color: #333;
-  font-weight: 700;
-  letter-spacing: 1px;
-  font-size: 20px;
-}
 
 /* Navigation menu */
 .nav-menu {
