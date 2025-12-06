@@ -10,6 +10,14 @@ public class TransportRequest {
     private AvailabilityStatus availabilityStatus;
     private Long rescuerId;
 
+    public TransportRequest(VehicleType vehicleType, Integer capacity, String destinations, AvailabilityStatus availabilityStatus, Long rescuerId) {
+        this.vehicleType = vehicleType;
+        this.capacity = capacity;
+        this.destinations = destinations;
+        this.availabilityStatus = availabilityStatus;
+        this.rescuerId = rescuerId;
+    }
+
     // Getters and Setters
     public VehicleType getVehicleType() { return vehicleType; }
     public void setVehicleType(VehicleType vehicleType) { this.vehicleType = vehicleType; }
