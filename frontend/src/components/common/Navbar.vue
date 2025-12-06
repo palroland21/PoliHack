@@ -95,7 +95,23 @@ const handleLogout = () => {
 @media (max-width: 768px) { .nav-menu { display: none; } }
 
 .nav-link {
-  color: #6c757d; text-decoration: none; font-weight: 500; font-size: 16px; transition: color 0.3s ease;
+  color: #6c757d;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #198754;
+}
+
+
+/* --- Stiluri Noi pentru containerul de actiuni --- */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Spatiu intre butoane */
 }
 .nav-link:hover { color: #198754; }
 
