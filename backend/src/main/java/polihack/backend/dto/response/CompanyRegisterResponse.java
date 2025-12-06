@@ -1,9 +1,5 @@
 package polihack.backend.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
 public class CompanyRegisterResponse {
     private Long id;
     private String companyName;

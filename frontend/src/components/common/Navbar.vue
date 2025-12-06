@@ -23,6 +23,11 @@
 
       <div class="navbar-actions">
 
+        <router-link to="/donate" class="donate-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          Donate
+        </router-link>
+
         <router-link v-if="!store.isLoggedIn" to="/login" class="auth-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           Sign In
@@ -50,16 +55,13 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { useMainStore } from '@/stores/mainStore';
+import { useMainStore } from '@/stores/mainStore'; // Asigura-te ca path-ul e corect
 
 const store = useMainStore();
 const router = useRouter();
 
 const handleLogout = () => {
-  // 1. Apelam actiunea de logout din Pinia
   store.logout();
-
-  // 2. Redirectionam catre Home (sau Login)
   router.push('/');
 };
 </script>
@@ -95,18 +97,50 @@ const handleLogout = () => {
 @media (max-width: 768px) { .nav-menu { display: none; } }
 
 .nav-link {
-  color: #6c757d; text-decoration: none; font-weight: 500; font-size: 16px; transition: color 0.3s ease;
+  color: #6c757d;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  transition: color 0.3s ease;
 }
 .nav-link:hover { color: #198754; }
 
-/* Wrapper pentru actiunile cand esti logat */
+/* --- Container Actiuni --- */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .logged-in-actions {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* SIGN IN BUTTON (Verde) */
+/* --- BUTON DONATE (ROSU) --- */
+.donate-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white;
+  color: #dc3545; /* Rosu inima */
+  border: 2px solid #dc3545;
+  padding: 8px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.donate-button:hover {
+  background-color: #dc3545;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* --- BUTON SIGN IN (VERDE) --- */
 .auth-button {
   display: flex; align-items: center; gap: 8px;
   background-color: #198754; color: white;
@@ -118,7 +152,7 @@ const handleLogout = () => {
 .auth-button:hover { background-color: #157347; transform: translateY(-1px); }
 .auth-button:active { transform: translateY(0); }
 
-/* DASHBOARD BUTTON (Gri Inchis) */
+/* --- BUTON DASHBOARD (GRI) --- */
 .dashboard-btn {
   display: flex; align-items: center; gap: 8px;
   background-color: #343a40; color: white;
@@ -128,11 +162,11 @@ const handleLogout = () => {
 }
 .dashboard-btn:hover { background-color: #23272b; }
 
-/* LOGOUT BUTTON (Rosu Outline / Minimal) */
+/* --- BUTON LOGOUT (MINIMAL) --- */
 .logout-btn {
   display: flex; align-items: center; gap: 8px;
   background-color: transparent;
-  color: #dc3545; /* Rosu */
+  color: #dc3545;
   border: 1px solid #dc3545;
   padding: 8px 16px; border-radius: 8px;
   font-weight: 600; font-size: 14px;
