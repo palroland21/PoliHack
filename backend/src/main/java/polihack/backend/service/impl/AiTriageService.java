@@ -19,7 +19,7 @@ public class AiTriageService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    private static final String GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
+    private static final String GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=";
 
     public AiTriageService(WebClient webClient, ObjectMapper objectMapper) {
         this.webClient = webClient;
