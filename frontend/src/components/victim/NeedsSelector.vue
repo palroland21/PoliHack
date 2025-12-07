@@ -52,7 +52,7 @@ function handleContinue() {
   <div class="step-container">
 
     <div class="step-header">
-      <h1 class="step-title">Step 2: What Do You Need?</h1>
+      <h1 class="step-title">Step 1: What Do You Need?</h1>
       <p class="step-description">Select the category of help you need</p>
     </div>
 
