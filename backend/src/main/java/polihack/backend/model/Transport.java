@@ -1,8 +1,10 @@
 package polihack.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import polihack.backend.model.enums.AvailabilityStatus;
+import polihack.backend.model.enums.StatusType;
 import polihack.backend.model.enums.VehicleType;
 
 @Entity
@@ -30,7 +32,20 @@ public class Transport {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rescuer_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Rescuer rescuer;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private StatusType status = StatusType.FREE;
+
+    public StatusType getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusType status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;

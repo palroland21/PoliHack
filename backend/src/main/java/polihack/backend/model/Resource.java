@@ -1,9 +1,11 @@
 package polihack.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import polihack.backend.model.enums.AvailabilityStatus;
 import polihack.backend.model.enums.ResourceType;
+import polihack.backend.model.enums.StatusType;
 
 import java.util.Set;
 
@@ -33,9 +35,21 @@ public class Resource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rescuer_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Rescuer rescuer;
 
-    // Getters and Setters
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private StatusType status = StatusType.FREE;
+
+    public StatusType getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusType status) {
+        this.status = status;
+    }
+// Getters and Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
