@@ -39,7 +39,7 @@ const mapContainer = ref(null)
 let map = null
 let marker = null
 
-// Fix Leaflet default icon issue
+
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -62,7 +62,7 @@ function onMapClick(e) {
 
   setMarker(lat, lon)
 
-  // Reverse geocode to get address with zoom level for more precision
+  // reverse geocode to get address with zoom level for more precision
   fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=en`)
     .then(res => res.json())
     .then(data => {
@@ -95,22 +95,17 @@ function onMapClick(e) {
     })
 }
 
-// Expose method to set marker from parent
+// expose method to set marker from parent
 function setLocationFromGPS(lat, lon) {
   if (map) {
-    // Invalidate size first in case map container size changed
     map.invalidateSize()
 
-    // Remove existing marker if any
     if (marker) {
       map.removeLayer(marker)
       marker = null
     }
 
-    // Create new marker at exact position
     marker = L.marker([lat, lon]).addTo(map)
-
-    // Center map on marker with higher zoom for precision
     map.setView([lat, lon], 18)
   }
 }
@@ -126,7 +121,6 @@ onMounted(() => {
 
   map.on('click', onMapClick)
 
-  // If initial marker position provided
   if (props.markerLat && props.markerLon) {
     setMarker(props.markerLat, props.markerLon)
   }
@@ -138,7 +132,6 @@ onUnmounted(() => {
   }
 })
 
-// Watch for external marker updates
 watch(() => [props.markerLat, props.markerLon], ([lat, lon]) => {
   if (lat && lon && map) {
     setMarker(lat, lon)

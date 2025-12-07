@@ -85,7 +85,7 @@ const isLoading = ref(false);
 
 const API_URL = 'http://localhost:9090';
 
-// 1. Fetch Data
+//fetch Data
 const fetchData = async () => {
   isLoading.value = true;
   try {
@@ -110,7 +110,6 @@ onMounted(() => {
   fetchData();
 });
 
-// 2. Computed List
 const currentList = computed(() => {
   if (activeTab.value === 'resources') return resourcesList.value;
   if (activeTab.value === 'transport') return transportList.value;
@@ -118,7 +117,6 @@ const currentList = computed(() => {
   return [];
 });
 
-// 3. Helpers
 const getItemTitle = (item) => {
   if (activeTab.value === 'resources') return "Resource Pack";
   if (activeTab.value === 'transport') return item.vehicleType;
@@ -131,7 +129,6 @@ const getItemDetails = (item) => {
   if (activeTab.value === 'housing') return `Cap: ${item.capacity} pers | ${item.address}`;
 };
 
-// 4. Request Logic
 const requestItem = async (id) => {
   if(!confirm("Are you sure you want to request this item?")) return;
   const category = activeTab.value;
@@ -163,24 +160,20 @@ const requestItem = async (id) => {
 };
 
 const goBack = () => {
-  // Optiunea A: Merge inapoi exact de unde ai venit (ca butonul Back din browser)
   router.push("/client");
-
-  // Optiunea B (Alternativ): Daca vrei sa il fortezi sa mearga la o ruta anume
   // router.push('/step-2');
 };
 </script>
 
 <style scoped>
 .selection-container {
-  max-width: 1000px; /* Mai lat pentru a respira grid-ul */
+  max-width: 1000px;
   margin: 0 auto;
   padding: 40px 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
 }
 
-/* HEADER STYLE */
 .header {
   position: relative;
   text-align: center;
@@ -223,7 +216,6 @@ const goBack = () => {
   margin: 0;
 }
 
-/* TABS STYLE */
 .tabs-wrapper {
   display: flex;
   justify-content: center;
@@ -259,7 +251,7 @@ const goBack = () => {
 }
 
 .tab-btn.active {
-  background-color: #e8a838; /* Culoarea de resurse din screenshot */
+  background-color: #e8a838;
   color: white;
   box-shadow: 0 4px 15px rgba(232, 168, 56, 0.3);
 }
@@ -309,7 +301,6 @@ const goBack = () => {
   line-height: 1.3;
 }
 
-/* BADGES */
 .status-badge {
   padding: 6px 12px;
   border-radius: 20px;
@@ -329,7 +320,6 @@ const goBack = () => {
   color: #842029;
 }
 
-/* DETAILS */
 .detail-row {
   display: flex;
   align-items: flex-start;
@@ -360,7 +350,7 @@ const goBack = () => {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  background-color: #198754; /* Green */
+  background-color: #198754;
   color: white;
   transition: background-color 0.2s, transform 0.1s;
 }
@@ -377,7 +367,6 @@ const goBack = () => {
   transform: none;
 }
 
-/* LOADING & EMPTY STATES */
 .state-message {
   text-align: center;
   padding: 60px;

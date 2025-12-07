@@ -61,7 +61,6 @@
   color: #333;
 }
 
-/* Hero */
 .hero-section {
   text-align: center;
   margin-bottom: 60px;
@@ -76,7 +75,6 @@
 h1 { font-size: 2.5rem; margin-bottom: 10px; }
 .subtitle { font-size: 1.2rem; color: #666; max-width: 600px; margin: 0 auto; }
 
-/* Grid */
 .mission-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -107,7 +105,6 @@ h1 { font-size: 2.5rem; margin-bottom: 10px; }
 .info-card h3 { margin-bottom: 10px; font-size: 1.2rem; }
 .info-card p { color: #666; line-height: 1.5; font-size: 0.95rem; }
 
-/* Story */
 .story-section {
   background: #f8f9fa;
   padding: 40px;
@@ -118,7 +115,6 @@ h1 { font-size: 2.5rem; margin-bottom: 10px; }
 .story-section h2 { margin-bottom: 20px; }
 .story-section p { max-width: 700px; margin: 0 auto; line-height: 1.6; color: #555; font-size: 1.05rem; }
 
-/* CTA */
 .cta-section { text-align: center; }
 .cta-btn {
   background: #198754; color: white;

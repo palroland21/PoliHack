@@ -86,7 +86,7 @@ const form = reactive({
   username: '',
   phone: '',
   email: '',
-  pid: '', // Dacă e necesar în DTO-ul de backend
+  pid: '',
   password: '',
   confirmPassword: ''
 });
@@ -108,9 +108,6 @@ const handleRegister = async () => {
     telephone: form.phone,
     email: form.email,
     password: form.password,
-
-    // AICI ESTE SCHIMBAREA:
-    // Schimbă cheia din 'pid' în 'cnp' ca să se potrivească cu Backend-ul
     cnp: form.pid
   };
 
@@ -134,17 +131,14 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-/* Același CSS ca la Register.vue, adaptat la ROȘU */
 .submit-btn {
-  background-color: #dc3545; /* Roșu */
-  /* restul proprietatilor */
+  background-color: #dc3545;
   width: 100%; padding: 14px; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.3s;
 }
 .submit-btn:hover { background-color: #bb2d3b; }
 .link { color: #dc3545; font-weight: 600; text-decoration: none; }
 .input-field:focus { outline: none; border-color: #dc3545; background-color: white; }
 
-/* Include restul stilurilor de layout de la Register.vue */
 .register-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; padding: 40px 20px; font-family: 'Segoe UI', sans-serif; position: relative; }
 .back-btn-absolute { position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 8px; font-size: 1rem; color: #555; text-decoration: none; font-weight: 600; z-index: 10; }
 .register-card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); width: 100%; max-width: 500px; margin-top: 20px; }

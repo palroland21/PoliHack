@@ -20,7 +20,7 @@ const routes = [
         name: 'Home',
         component: HomeView
     },
-    // --- RUTE PENTRU VICTIME (CLIENT) ---
+    // rute pt VICTIME (CLIENT) ---
     {
         path: '/client/login',
         name: 'VictimLogin',
@@ -31,7 +31,6 @@ const routes = [
         name: 'VictimRegister',
         component: VictimRegister
     },
-    // --- RUTA PROTEJATĂ (HARTA) ---
     {
         path: '/client',
         name: 'VictimFlow',
@@ -40,16 +39,14 @@ const routes = [
             const token = localStorage.getItem('token');
             const userType = localStorage.getItem('userType');
 
-            // Verificăm dacă e logat ca și client sau victim
             if (token && (userType === 'client' || userType === 'victim')) {
                 next();
             } else {
-                // Redirect către login-ul de client
                 next('/client/login');
             }
         }
     },
-    // --- RUTELE PENTRU SALVATORI ---
+    // restul rutelor
     {
         path: '/rescuer',
         name: 'RescuerHub',

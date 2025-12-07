@@ -37,12 +37,10 @@ function toggleNeed(id) {
 }
 
 function handleContinue() {
-  // Verificam daca utilizatorul a selectat "Resources & Logistics" (care are ID 2)
+  //daca userul a selectat varianta 2, resurse & logistics
   if (selectedNeeds.value.includes(2)) {
-    // Daca a selectat resurse, il trimitem pe pagina noua creata la Pasul 2
     router.push('/select-resources')
   } else {
-    // Daca a selectat altceva (ex: Medical), continuam fluxul normal
     emit('next')
   }
 }

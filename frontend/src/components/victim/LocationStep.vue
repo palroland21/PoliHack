@@ -42,7 +42,6 @@ async function getGPS() {
 
       confirmedCoordinates.value = { lat, lon }
 
-      // Set marker on map with small delay to ensure map is ready
       setTimeout(() => {
         if (mapRef.value) {
           mapRef.value.setLocationFromGPS(lat, lon)

@@ -160,7 +160,6 @@ const form = reactive({
   email: '',
   password: '',
   confirmPassword: '',
-  // Company specific fields
   companyName: '',
   cui: '',
   regNo: '',
@@ -176,18 +175,16 @@ onMounted(() => {
 });
 
 const handleRegister = async () => {
-  // Clear previous errors
   errorMessage.value = '';
 
-  // --- FRONTEND VALIDATIONS ---
 
-  // 1. Check for empty common fields
+  // frontend validations - check for empty common fields
   if (!form.username || !form.password || !form.email || !form.phone) {
     errorMessage.value = "Please fill in all required fields (Username, Email, Phone, Password).";
     return;
   }
 
-  // 2. Password Match
+  //pass match
   if (form.password !== form.confirmPassword) {
     errorMessage.value = "Passwords do not match!";
     return;
@@ -197,12 +194,10 @@ const handleRegister = async () => {
   let payload = {};
 
   if (activeTab.value === 'individual') {
-    // --- INDIVIDUAL VALIDATIONS ---
     if (!form.firstName || !form.lastName) {
       errorMessage.value = "First Name and Last Name are required.";
       return;
     }
-    // CNP Validation
     if (!form.personalId || form.personalId.length !== 13 || isNaN(form.personalId)) {
       errorMessage.value = "Personal ID (CNP) must be exactly 13 numeric digits.";
       return;
@@ -221,7 +216,6 @@ const handleRegister = async () => {
     };
 
   } else {
-    // --- COMPANY VALIDATIONS ---
     if (!form.companyName || !form.cui || !form.address) {
       errorMessage.value = "Company Name, CUI and Address are required.";
       return;
@@ -242,7 +236,7 @@ const handleRegister = async () => {
   }
 
   try {
-    // --- BACKEND REQUEST ---
+    //backend request
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -261,7 +255,6 @@ const handleRegister = async () => {
       errorMessage.value = errorText || 'Registration failed. Please try again.';
       console.error('Registration failed:', errorText);
     }
-    // (Am sters onMounted de aici pentru ca nu avea ce cauta in interiorul functiei)
   } catch (error) {
     console.error('Network error:', error);
     errorMessage.value = 'Connection error. Check if the server is running on port 9090.';

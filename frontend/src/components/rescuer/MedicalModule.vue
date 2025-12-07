@@ -79,19 +79,16 @@ import { useMainStore } from '@/stores/mainStore';
 
 const store = useMainStore();
 
-// Starea locala: Daca e validat sau nu
 const isVerified = ref(false);
 const isLoading = ref(false);
 
-// Datele formularului
 const form = reactive({
   fullName: '',
   cuim: '',
   specialization: 'General Medicine'
 });
 
-// Verificam la incarcare daca userul a fost deja validat in trecut
-// (Poti salva asta in localStorage sau in store ca sa nu ceara de fiecare data)
+// verificam la incarcare daca userul a fost deja validat in trecut
 onMounted(() => {
   const savedStatus = localStorage.getItem('isMedicalVerified');
   if (savedStatus === 'true') {
@@ -99,7 +96,7 @@ onMounted(() => {
   }
 });
 
-// Functia care trimite datele la Backend (Java)
+// functia care trimite datele la backend
 const handleVerification = async () => {
   if (!store.userId) {
     alert("Error: You are not logged in!");
@@ -108,8 +105,6 @@ const handleVerification = async () => {
 
   isLoading.value = true;
 
-  // Endpoint-ul creat in Java (Controller-ul tau)
-  // URL-ul: http://localhost:8080/medical/verify/{rescuerId}
   const url = `http://localhost:9090/medical/verify/${store.userId}`;
 
   try {
@@ -117,21 +112,18 @@ const handleVerification = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Daca ai securitate pe endpoint, decomenteaza linia de mai jos:
         // 'Authorization': `Bearer ${store.token}`
       },
       body: JSON.stringify(form)
     });
 
     if (response.ok) {
-      // SUCES: Backend-ul a validat (simulat) medicul
       setTimeout(() => {
         isVerified.value = true;
         isLoading.value = false;
 
-        // Salvam local ca sa tinem minte sesiunea asta
         localStorage.setItem('isMedicalVerified', 'true');
-      }, 1000); // Mic delay pentru efect vizual
+      }, 1000);
     } else {
       alert("Verification Failed: CUIM not found or invalid.");
       isLoading.value = false;
@@ -146,7 +138,6 @@ const handleVerification = async () => {
 </script>
 
 <style scoped>
-/* Container Principal */
 .medical-module-container {
   max-width: 800px;
   margin: 30px auto;
@@ -155,10 +146,9 @@ const handleVerification = async () => {
 }
 
 .header-section { text-align: center; margin-bottom: 30px; }
-.header-section h2 { color: #dc3545; margin: 0; font-size: 2rem; } /* Rosu Medical */
+.header-section h2 { color: #dc3545; margin: 0; font-size: 2rem; }
 .subtitle { color: #666; margin-top: 5px; }
 
-/* CARD VERIFICARE */
 .verification-wrapper { display: flex; justify-content: center; }
 
 .verification-card {
@@ -184,7 +174,7 @@ const handleVerification = async () => {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
-  box-sizing: border-box; /* IMPORTANT pt padding */
+  box-sizing: border-box;
   transition: border 0.2s;
 }
 .form-group input:focus { border-color: #dc3545; outline: none; }
@@ -205,7 +195,6 @@ const handleVerification = async () => {
 .verify-btn:hover { background-color: #b02a37; }
 .verify-btn:disabled { background-color: #e6aeb3; cursor: wait; }
 
-/* DASHBOARD DUPA VALIDARE */
 .status-banner {
   background-color: #d1e7dd;
   color: #0f5132;
@@ -225,7 +214,6 @@ const handleVerification = async () => {
   text-align: center;
 }
 
-/* Loader pt efect */
 .loader {
   border: 4px solid #f3f3f3;
   border-top: 4px solid #dc3545;

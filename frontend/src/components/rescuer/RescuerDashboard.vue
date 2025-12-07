@@ -82,16 +82,13 @@ const activeTab = ref('transport');
 const currentList = ref([]);
 const isLoading = ref(false);
 
-// Configurare Base URL (Presupunem port 8080 pentru Spring Boot)
-// IMPORTANT: Controller-ul tau e mapat pe "/rescuer", deci url-ul de baza e acesta:
 const BASE_URL = 'http://localhost:9090/rescuer';
 
 const fetchCategoryData = async (category) => {
-  // Verificam token-ul
+  // verificam token-ul
   if (!store.token) return;
 
-  // IMPORTANT: Avem nevoie de ID-ul userului logat pentru URL
-  // Asigura-te ca in store (la login) ai salvat si userId-ul, nu doar token-ul!
+  // avem nevoie de ID-ul userului logat pentru URL
   const userId = store.userId;
 
   if (!userId) {
@@ -105,8 +102,6 @@ const fetchCategoryData = async (category) => {
   try {
     let endpoint = '';
 
-    // AICI E MODIFICAREA PRINCIPALA: Adaugam userId la finalul URL-ului
-    // Ex: http://localhost:8080/rescuer/transport/5
     if (category === 'transport') endpoint = `${BASE_URL}/transport/${userId}`;
     else if (category === 'housing') endpoint = `${BASE_URL}/housing/${userId}`;
     else if (category === 'resources') endpoint = `${BASE_URL}/resources/${userId}`;
@@ -136,29 +131,23 @@ const deleteOffer = async (id) => {
     try {
       const type = activeTab.value; // 'transport', 'housing' sau 'resources'
 
-      // Endpoint-ul de stergere din Controller:
-      // @DeleteMapping("/offer/{type}/{id}")
-      // URL: http://localhost:8080/rescuer/offer/transport/12
       await fetch(`${BASE_URL}/offer/${type}/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${store.token}` }
       });
 
-      // Eliminam din lista vizuala (fara refresh la pagina)
       currentList.value = currentList.value.filter(o => o.id !== id);
 
     } catch (error) { console.error(error); }
   }
 };
 
-// WATCHER: Cand schimbam tab-ul, incarcam automat datele noi
 watch(activeTab, (newTab) => {
   fetchCategoryData(newTab);
 });
 
-// Initial load
 onMounted(() => {
-  // Verificam daca userul e logat inainte sa cerem date
+  // verificam daca userul e logat inainte sa cerem date
   if (store.token && store.userId) {
     fetchCategoryData(activeTab.value);
   }
@@ -166,7 +155,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Acelasi stil ca inainte, nu necesita modificari */
 .dashboard-container { max-width: 900px; margin: 40px auto; padding: 0 20px; font-family: 'Segoe UI', sans-serif; }
 .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .welcome-text h1 { margin: 0; font-size: 2rem; color: #333; }

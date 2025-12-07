@@ -56,22 +56,22 @@ import { useMainStore } from '@/stores/mainStore';
 const router = useRouter();
 const store = useMainStore();
 
-// --- LOGICA PENTRU VICTIMĂ ---
+//logica pt victima
 const handleVictimClick = () => {
   const token = localStorage.getItem('token');
   const userType = localStorage.getItem('userType');
 
-  // SCENARIUL 2: Daca e logat -> Harta (/client)
+  //daca e logat -> harta
   if (token && (userType === 'client' || userType === 'victim')) {
     router.push('/client');
   }
-  // Altfel -> Login (/client/login)
+  // altfel -> Login (/client/login)
   else {
     router.push('/client/login');
   }
 };
 
-// --- LOGICA PENTRU SALVATOR (Rescuer) ---
+// logica pt salvator
 const handleRescuerClick = () => {
   if (store.isLoggedIn) {
     router.push('/rescuer');
@@ -82,7 +82,6 @@ const handleRescuerClick = () => {
 </script>
 
 <style scoped>
-/* CSS-ul rămâne neschimbat */
 .home-container {
   min-height: 100vh;
   display: flex;

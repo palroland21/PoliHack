@@ -122,12 +122,11 @@
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 
-// State variables
 const isLoading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-// Form data
+// form data
 const form = reactive({
   vehicleType: 'car',
   capacity: '',
@@ -135,9 +134,8 @@ const form = reactive({
   availability: 'soon'
 });
 
-// Functie ajutatoare pentru a prelua ID-ul din Local Storage
+// functie ajutatoare pentru a prelua ID-ul din local storage
 const getLoggedUserId = () => {
-  // Încercăm să preluăm ID-ul din Local Storage, care a fost salvat la login
   const userId = localStorage.getItem('loggedUserId');
 
   if (!userId) {
@@ -157,20 +155,16 @@ const getLoggedUserId = () => {
 
 
 const submitOffer = async () => {
-  // 1. Resetăm mesajele anterioare
   errorMessage.value = '';
   successMessage.value = '';
 
-  // Preluăm ID-ul utilizatorului logat
   const loggedUserId = getLoggedUserId();
 
-  // 1.1. Verificare Autentificare
   if (loggedUserId === 0) {
     errorMessage.value = "User not authenticated. Please log in before submitting an offer.";
     return;
   }
 
-  // 2. Validare simplă
   if (!form.capacity || !form.destinations) {
     errorMessage.value = "Please complete capacity and destinations.";
     return;
@@ -178,7 +172,6 @@ const submitOffer = async () => {
 
   isLoading.value = true;
 
-  // 3. Prepare object for Backend (DTO)
   const requestPayload = {
     vehicleType: form.vehicleType.toUpperCase(),
     capacity: form.capacity,
@@ -188,15 +181,13 @@ const submitOffer = async () => {
   };
 
   try {
-    // 4. Axios call
+
     const response = await axios.post('http://localhost:9090/transport/add', requestPayload);
 
     console.log("Success:", response.data);
 
-    // Setăm mesajul de succes în pagină
     successMessage.value = "Offer successfully registered!";
 
-    // 5. Reset form
     form.capacity = '';
     form.destinations = '';
     form.vehicleType = 'car';
@@ -212,7 +203,6 @@ const submitOffer = async () => {
 </script>
 
 <style scoped>
-/* ... Stilurile existente rămân la fel ... */
 
 .transport-container {
   padding: 10px;
@@ -363,11 +353,10 @@ const submitOffer = async () => {
   opacity: 0.8;
 }
 
-/* STILURI NOI PENTRU MESAJE */
 .message-container {
   text-align: center;
   margin-top: 10px;
-  min-height: 24px; /* Previne "săritura" layout-ului */
+  min-height: 24px;
 }
 
 .error-text {
@@ -378,7 +367,7 @@ const submitOffer = async () => {
 }
 
 .success-text {
-  color: #198754; /* Culoarea verde din temă */
+  color: #198754;
   font-size: 1rem;
   font-weight: 600;
   margin: 0;

@@ -112,25 +112,21 @@
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 
-// State variables for communication
 const isLoading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-// LISTA ACTUALIZATĂ: Se potrivește cu Enum-ul Java HousingFacility (WIFI, PRIVATE_BATHROOM, PETS_ALLOWED etc.)
 const amenitiesList = [
   "WiFi",
   "Kitchen",
-  "Private Bathroom", // Modificat pentru a se potrivi cu PRIVATE_BATHROOM
+  "Private Bathroom",
   "Heating",
   "Pets Allowed",
   "Parking"
-  // "Bed Linens" a fost eliminat
 ];
 
 
 const form = reactive({
-// ... restul formului rămâne la fel
   spaceType: 'room',
   capacity: '',
   address: '',
@@ -139,7 +135,6 @@ const form = reactive({
   notes: ''
 });
 
-// ... toggleAmenity rămâne la fel ...
 const toggleAmenity = (amenity) => {
   if (form.amenities.includes(amenity)) {
     form.amenities = form.amenities.filter(item => item !== amenity);
@@ -148,8 +143,7 @@ const toggleAmenity = (amenity) => {
   }
 };
 
-
-// ... getLoggedUserId rămâne la fel ...
+//luam id-ul userului logat
 const getLoggedUserId = () => {
   const userId = localStorage.getItem('loggedUserId');
 
@@ -174,13 +168,12 @@ const submitOffer = async () => {
   const loggedUserId = getLoggedUserId();
   const token = localStorage.getItem('token');
 
-  // 1. Verificare Autentificare (Soluția 1)
+  // verif daca e conectat
   if (loggedUserId === 0 || !token) {
     errorMessage.value = "User not authenticated. Please log in before submitting an offer.";
     return;
   }
 
-  // 2. Validare simplă
   if (!form.capacity || !form.address) {
     errorMessage.value = "Please complete capacity and address fields.";
     return;
@@ -188,15 +181,13 @@ const submitOffer = async () => {
 
   isLoading.value = true;
 
-  // 3. Prepare object for Backend (DTO)
+  // preg obiect pt backend
   const requestPayload = {
     housingType: form.spaceType.toUpperCase(),
     capacity: form.capacity,
     address: form.address,
     availablePeriod: form.duration,
 
-    // SOLUȚIA FINALĂ: Mapare corectă a String-urilor cu spații la Enum-urile cu underscore
-    // Ex: "Private Bathroom" -> "PRIVATE_BATHROOM"
     facilities: form.amenities.map(a => a.toUpperCase().replace(/\s/g, '_')),
 
     additionalNotes: form.notes,
@@ -204,7 +195,7 @@ const submitOffer = async () => {
   };
 
   try {
-    // 4. Axios call: Adaugă Authorization Header (Soluția 1)
+    // axios call
     const response = await axios.post('http://localhost:9090/housing/add', requestPayload, {
       headers: {
         'Content-Type': 'application/json',
@@ -216,7 +207,6 @@ const submitOffer = async () => {
 
     successMessage.value = "Housing offer successfully registered!";
 
-    // 5. Reset form (opțional)
     form.capacity = '';
     form.address = '';
     form.duration = '';
@@ -377,7 +367,6 @@ const submitOffer = async () => {
   border-color: #0d6efd;
 }
 
-/* Submit Button */
 .submit-btn {
   margin-top: 10px;
   width: 100%;
