@@ -58,7 +58,7 @@ Victims can request:
 ## Tech Stack (High-Level)
 
 - **Frontend:** Vue (PWA UI, dashboards, Leaflet map, Stripe checkout)
-- **Backend:** Java (API, auth, Gemini triage, Stripe webhooks)
+- **Backend:** Java (API, auth, Gemini triage, Stripe webhooks,PostgreSQL as database)
 - **Folders:**
   - `frontend/`
   - `backend/`
