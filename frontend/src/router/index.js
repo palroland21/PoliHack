@@ -12,6 +12,7 @@ import ContactView from "@/views/ContactView.vue";
 
 import VictimLogin from "@/components/victim/VictimLogin.vue";
 import VictimRegister from "@/components/victim/VictimRegister.vue";
+import ResourcesSelection from "@/views/ResourcesSelection.vue";
 
 const routes = [
     {
@@ -88,6 +89,11 @@ const routes = [
         path: '/contact',
         name: 'ContactView',
         component: ContactView
+    },
+    {
+        path: '/select-resources',
+        name: 'ResourcesSelection',
+        component: ResourcesSelection
     }
 ]
 

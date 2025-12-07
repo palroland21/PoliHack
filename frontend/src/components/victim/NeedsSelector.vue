@@ -1,9 +1,13 @@
 <script setup>
 import { ref, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 
 const emit = defineEmits(['update:selectedNeeds', 'next', 'back'])
 
+const router = useRouter();
+
 const selectedNeeds = ref([])
+
 
 const needs = [
   {
@@ -33,7 +37,14 @@ function toggleNeed(id) {
 }
 
 function handleContinue() {
-  emit('next')
+  // Verificam daca utilizatorul a selectat "Resources & Logistics" (care are ID 2)
+  if (selectedNeeds.value.includes(2)) {
+    // Daca a selectat resurse, il trimitem pe pagina noua creata la Pasul 2
+    router.push('/select-resources')
+  } else {
+    // Daca a selectat altceva (ex: Medical), continuam fluxul normal
+    emit('next')
+  }
 }
 </script>
 
