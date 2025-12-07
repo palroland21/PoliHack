@@ -1,34 +1,35 @@
 <template>
   <div class="victim-flow">
     <!-- Back button -->
-    <button class="back-btn" @click="goBack" v-if="step < 5 && step !== 1">
+    <button class="back-btn" @click="goBack" v-if="step < 4">
       <span class="arrow">←</span> Back
     </button>
 
-    <!-- Step 1: Needs Selection -->
-    <NeedsSelector
-      v-if="step === 1"
-      @update:selectedNeeds="handleNeedsSelected"
-      @next="handleNeedsNext"
-    />
-
-    <!-- Step 2: Location (only for Medical Assistance) -->
+    <!-- Step 1: Location -->
     <LocationStep
-      v-if="step === 2 && selectedNeeds.includes(1)"
-      @update:location="location => confirmedLocation = location"
-      @update:coordinates="coords => confirmedCoordinates = coords"
-      @next="nextStep"
+        v-if="step === 1"
+        @update:location="location => confirmedLocation = location"
+        @update:coordinates="coords => confirmedCoordinates = coords"
+        @next="nextStep"
     />
 
-    <!-- Step 3: Medical Triage (if Medical Assistance selected) -->
+    <!-- Step 2: Needs -->
+    <NeedsSelector
+        v-if="step === 2"
+        @update:selectedNeeds="needs => selectedNeeds = needs"
+        @next="nextStep"
+        @back="prevStep"
+    />
+
+    <!-- Step 3: Triage -->
     <TriageForm
-      v-if="step === 3 && selectedNeeds.includes(1)"
-      @update:triageResult="result => triageResult = result"
-      @submit="showResult"
-      @back="prevStep"
+        v-if="step === 3"
+        @update:triageResult="result => triageResult = result"
+        @submit="showResult"
+        @back="prevStep"
     />
 
-    <!-- Step 5: Result -->
+    <!-- Step 4: Result -->
     <div v-if="step === 4" class="result-container">
       <div class="success-animation">
         <div class="checkmark">✓</div>
@@ -149,15 +150,6 @@ export default {
       router.push('/')
     }
 
-    function handleNeedsSelected(needs) {
-      selectedNeeds.value = needs
-    }
-
-    function handleNeedsNext() {
-      // After selecting needs, go to appropriate step
-      step.value = 2
-    }
-
     function getNeedsText() {
       const needsMap = {
         1: 'Medical Assistance',
@@ -174,8 +166,6 @@ export default {
       goBack,
       goHome,
       getNeedsText,
-      handleNeedsSelected,
-      handleNeedsNext,
       confirmedLocation,
       confirmedCoordinates,
       selectedNeeds,
