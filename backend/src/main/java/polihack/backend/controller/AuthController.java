@@ -58,7 +58,6 @@ public class AuthController {
             String token = jwtUtil.generateToken(rescuer.getUsername(), rescuer.getPassword());
             System.out.println("Rescuer " + rescuer.getUsername() + " logged succefully!");
 
-            // MODIFICARE: Returnează token-ul ȘI ID-ul
             return ResponseEntity.ok(new LoginResponse(token, rescuer.getId()));
         }
         return ResponseEntity.status(401).body("Invalid credentials!");

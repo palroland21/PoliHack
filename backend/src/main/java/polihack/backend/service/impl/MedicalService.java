@@ -19,20 +19,12 @@ public class MedicalService {
         System.out.println("Rescuer ID: " + rescuerId);
         System.out.println("Checking CMR Database for CUIM: " + request.getCuim());
 
-        // MOCK VALIDATION (Simulare)
         boolean isMockValid = request.getCuim() != null && !request.getCuim().isEmpty();
 
         if (isMockValid) {
-            // Cautam Rescuer-ul
+            //cautam Rescuer-ul
             Rescuer rescuer = rescuerRepository.findById(rescuerId)
                     .orElseThrow(() -> new RuntimeException("Rescuer not found with id: " + rescuerId));
-
-            // AICI: Trebuie sa ai un camp in Rescuer.java pentru asta.
-            // De exemplu, adauga in modelul Rescuer: private Boolean isMedicalPersonal;
-            // rescuer.setIsMedicalPersonal(true);
-
-            // SAU daca ai un camp de "profesie/specializare":
-            // rescuer.setJobTitle("Medic: " + request.getSpecialization());
 
             rescuerRepository.save(rescuer);
 

@@ -18,7 +18,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     public Client registerClient(Client client) {
-        // Criptăm parola înainte de salvare
+        // criptam parola inainte de salvare
         client.setPassword(passwordEncoder.encode(client.getPassword()));
         return clientRepository.save(client);
     }

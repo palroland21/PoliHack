@@ -31,9 +31,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Company registerCompany(Company company) {
-        // Normalizam username-ul (lowercase)
         company.setUsername(company.getUsername().toLowerCase());
-        // Encodam parola inainte de salvare
+        // encodam parola inainte de salvare
         company.setPassword(passwordEncoder.encode(company.getPassword()));
         return companyRepository.save(company);
     }

@@ -13,7 +13,7 @@ import polihack.backend.repository.TransportRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/public") // Asta face ca toate linkurile sa inceapa cu /public
+@RequestMapping("/public")
 public class PublicOfferController {
 
     private final ResourceRepository resourceRepository;
@@ -28,24 +28,18 @@ public class PublicOfferController {
         this.housingRepository = housingRepository;
     }
 
-    // 1. Endpoint pentru RESURSE
-    // URL: http://localhost:8080/public/resources
     @GetMapping("/resources")
     public ResponseEntity<List<Resource>> getAllResources() {
-        // Returnam tot ce e in baza de date.
-        // Frontend-ul va verifica campul 'status' sa vada daca e ocupat sau nu.
+        //return tot ce e in baza de date la resurse
         return ResponseEntity.ok(resourceRepository.findAll());
     }
 
-    // 2. Endpoint pentru TRANSPORT
-    // URL: http://localhost:8080/public/transport
+
     @GetMapping("/transport")
     public ResponseEntity<List<Transport>> getAllTransport() {
         return ResponseEntity.ok(transportRepository.findAll());
     }
 
-    // 3. Endpoint pentru CAZARE
-    // URL: http://localhost:8080/public/housing
     @GetMapping("/housing")
     public ResponseEntity<List<Housing>> getAllHousing() {
         return ResponseEntity.ok(housingRepository.findAll());
@@ -61,7 +55,7 @@ public class PublicOfferController {
                     if (item.getStatus() == StatusType.TAKEN) {
                         return ResponseEntity.badRequest().body("Already taken!");
                     }
-                    item.setStatus(StatusType.TAKEN); // Sau "TAKEN" daca e String
+                    item.setStatus(StatusType.TAKEN);
                     resourceRepository.save(item);
                     return ResponseEntity.ok("Reserved successfully!");
                 }).orElse(ResponseEntity.notFound().build());
