@@ -1,10 +1,10 @@
 package polihack.backend.dto.response;
 
 public class TriageResponse {
-    private int priority;       // 1 = Urgent, 2 = Moderate, 3 = Mild
-    private String category;    // "Urgent", "Moderate", "Mild"
-    private String advice;      // Short advice
-    private String summary;     // Brief summary
+    private int priority;
+    private String category;
+    private String advice;
+    private String summary;
 
     public TriageResponse() {
     }
@@ -16,12 +16,11 @@ public class TriageResponse {
         this.summary = summary;
     }
 
-    // Legacy constructor for compatibility
     public TriageResponse(String category, String advice, String summary) {
         this.category = category;
         this.advice = advice;
         this.summary = summary;
-        // Set priority based on category
+        // set priority based on category
         if ("CRITICAL".equalsIgnoreCase(category) || "Urgent".equalsIgnoreCase(category) || "Severe".equalsIgnoreCase(category) || "1".equals(category)) {
             this.priority = 1;
         } else if ("URGENT".equalsIgnoreCase(category) || "Moderate".equalsIgnoreCase(category) || "2".equals(category)) {

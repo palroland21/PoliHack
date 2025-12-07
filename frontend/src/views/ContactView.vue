@@ -94,7 +94,6 @@ h1 { font-size: 2.5rem; margin-bottom: 10px; color: #333; }
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-/* Info Side */
 .info-side {
   display: flex;
   flex-direction: column;
@@ -117,7 +116,6 @@ h1 { font-size: 2.5rem; margin-bottom: 10px; color: #333; }
 .info-item h3 { margin: 0 0 5px 0; font-size: 1.1rem; color: #333; }
 .info-item p { margin: 0; color: #666; font-size: 0.95rem; }
 
-/* Form Side */
 .form-group { margin-bottom: 20px; }
 label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
 .input-field {
@@ -138,7 +136,6 @@ label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
 }
 .submit-btn:hover { background: #157347; }
 
-/* Responsive */
 @media (max-width: 768px) {
   .contact-layout { grid-template-columns: 1fr; gap: 30px; padding: 20px; }
   .info-side { flex-direction: row; flex-wrap: wrap; justify-content: space-between; }

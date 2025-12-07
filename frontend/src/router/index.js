@@ -12,6 +12,7 @@ import ContactView from "@/views/ContactView.vue";
 
 import VictimLogin from "@/components/victim/VictimLogin.vue";
 import VictimRegister from "@/components/victim/VictimRegister.vue";
+import ResourcesSelection from "@/views/ResourcesSelection.vue";
 
 const routes = [
     {
@@ -19,7 +20,7 @@ const routes = [
         name: 'Home',
         component: HomeView
     },
-    // --- RUTE PENTRU VICTIME (CLIENT) ---
+    // rute pt VICTIME (CLIENT) ---
     {
         path: '/client/login',
         name: 'VictimLogin',
@@ -30,7 +31,6 @@ const routes = [
         name: 'VictimRegister',
         component: VictimRegister
     },
-    // --- RUTA PROTEJATĂ (HARTA) ---
     {
         path: '/client',
         name: 'VictimFlow',
@@ -39,16 +39,14 @@ const routes = [
             const token = localStorage.getItem('token');
             const userType = localStorage.getItem('userType');
 
-            // Verificăm dacă e logat ca și client sau victim
             if (token && (userType === 'client' || userType === 'victim')) {
                 next();
             } else {
-                // Redirect către login-ul de client
                 next('/client/login');
             }
         }
     },
-    // --- RUTELE PENTRU SALVATORI ---
+    // restul rutelor
     {
         path: '/rescuer',
         name: 'RescuerHub',
@@ -88,6 +86,11 @@ const routes = [
         path: '/contact',
         name: 'ContactView',
         component: ContactView
+    },
+    {
+        path: '/select-resources',
+        name: 'ResourcesSelection',
+        component: ResourcesSelection
     }
 ]
 

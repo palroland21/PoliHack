@@ -5,7 +5,6 @@ import { useMainStore } from '@/stores/mainStore'; // Asigură-te că importi st
 
 const store = useMainStore();
 
-// --- STATE ---
 const customAmount = ref('');
 const selectedCurrency = ref('RON');
 const loading = ref(false);
@@ -14,15 +13,13 @@ const activeTab = ref('donation'); // 'donation' sau 'subscription'
 const currencies = ['RON', 'EUR', 'USD'];
 const presetAmounts = [20, 50, 100, 200];
 
-// --- LOGICA PENTRU AFISARE TABS ---
-// Verificam daca userul este Victima (Client)
+
 const isVictim = computed(() => {
-  // Verificam in store sau localStorage
+  // verificam in store sau localStorage
   const type = store.userType || localStorage.getItem('userType');
   return type === 'client' || type === 'victim';
 });
 
-// --- FUNCȚIA PENTRU DONAȚIE (ONE-TIME) ---
 const initiateDonation = async () => {
   const amountToPay = customAmount.value;
 
@@ -37,7 +34,7 @@ const initiateDonation = async () => {
     const response = await axios.post('http://localhost:9090/payment/create-checkout-session', {
       amount: amountToPay,
       currency: selectedCurrency.value,
-      type: 'donation' // Backend-ul poate folosi asta pentru a distinge
+      type: 'donation'
     });
 
     if (response.data && response.data.checkoutUrl) {
@@ -51,16 +48,15 @@ const initiateDonation = async () => {
   }
 };
 
-// --- FUNCȚIA PENTRU SUBSCRIPȚIE (RECURRING) ---
 const initiateSubscription = async () => {
   loading.value = true;
 
   try {
-    // Trimitem cerere către endpoint-ul de subscripție
-    // Backend-ul trebuie să creeze o sesiune Stripe cu mode='subscription' și un priceId fix
+    //trimitem cerere catre endpoint-ul de subscriptie
+    //backendul creeaza o sesiune stripe
     const response = await axios.post('http://localhost:9090/payment/create-subscription-session', {
       currency: 'USD',
-      price: 10 // Prețul fix de 10$
+      price: 10
     });
 
     if (response.data && response.data.checkoutUrl) {
@@ -206,7 +202,6 @@ const initiateSubscription = async () => {
 
 .card-body { padding: 1.5rem; }
 
-/* --- STILURI PENTRU TABS (Format Individual/Company) --- */
 .tabs-container {
   display: flex;
   background-color: #f1f3f5;
@@ -237,7 +232,6 @@ const initiateSubscription = async () => {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* --- Currency Selector --- */
 .currency-selector { margin-bottom: 1rem; text-align: center; }
 .currency-selector label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; }
 .currency-options {
@@ -248,7 +242,6 @@ const initiateSubscription = async () => {
 }
 .currency-options button.active { background: white; color: #00b09b; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-/* --- Presets & Inputs --- */
 .preset-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
 .preset-btn {
   background: #fff; border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; color: #343a40; transition: 0.2s;
@@ -260,14 +253,12 @@ const initiateSubscription = async () => {
 .custom-input-group input:focus { border-color: #00b09b; }
 .currency-label { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; font-weight: bold; }
 
-/* --- Main Button --- */
 .donate-btn {
   width: 100%; padding: 14px; background: #00b09b; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.3s;
 }
 .donate-btn:hover:not(:disabled) { background: #009688; }
 .donate-btn:disabled { background: #aab2bd; cursor: not-allowed; }
 
-/* --- STILURI SPECIFICE PENTRU SUBSCRIPTION --- */
 .subscription-content {
   text-align: center;
   padding: 10px 0;
@@ -290,11 +281,10 @@ const initiateSubscription = async () => {
 .benefits-list li { margin-bottom: 8px; font-size: 0.95rem; color: #555; }
 
 .sub-btn {
-  background: #4a90e2; /* Culoare diferită pt subscription */
+  background: #4a90e2;
 }
 .sub-btn:hover:not(:disabled) { background: #357abd; }
 
-/* Animatie simpla de fade */
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }

@@ -9,21 +9,20 @@ const isAnalyzing = ref(false)
 const triageResult = ref(null)
 const errorMessage = ref('')
 
-// Helper to map the AI priority (1, 2, 3) to UI details
 const getSeverityDetails = (priority, category, advice, summary) => {
   let color, levelClass
 
   switch (priority) {
     case 1:
-      color = '#dc2626' // Red
+      color = '#dc2626'
       levelClass = 'critical'
       break
     case 2:
-      color = '#f59e0b' // Amber
+      color = '#f59e0b'
       levelClass = 'medium'
       break
     case 3:
-      color = '#22c55e' // Green
+      color = '#22c55e'
       levelClass = 'low'
       break
     default:
@@ -41,7 +40,7 @@ const getSeverityDetails = (priority, category, advice, summary) => {
   }
 }
 
-// Analyze symptoms via AI Backend
+//analyze symptoms via AI backend
 async function analyzeSymptoms() {
   if (!symptoms.value.trim()) {
     return
@@ -52,34 +51,31 @@ async function analyzeSymptoms() {
   triageResult.value = null
 
   try {
-    // Call the Spring Boot AI Controller via triageService
+    //call the AI Controller via triageService
     const response = await triageService.analyzeSymptoms(symptoms.value, 0)
 
-    // Map the response to UI details
+
     triageResult.value = getSeverityDetails(
-      response.priority,
-      response.category,
-      response.advice,
-      response.summary
+        response.priority,
+        response.category,
+        response.advice,
+        response.summary
     )
 
   } catch (error) {
     console.error('AI Triage failed:', error)
     errorMessage.value = "System is overloaded or offline. Please try again."
-    // Fallback: If AI fails, default to Medium
     triageResult.value = getSeverityDetails(2, 'MODERATE', 'Please see a doctor for evaluation.', 'AI analysis unavailable.')
   } finally {
     isAnalyzing.value = false
   }
 }
 
-// Submit final result to parent
 async function submitTriage() {
   if (!triageResult.value) {
     return
   }
 
-  // Emit success to parent to move to next step
   emit('update:triageResult', triageResult.value)
   emit('submit')
 }
@@ -88,7 +84,6 @@ function handleBack() {
   emit('back')
 }
 
-// Computed property to check if symptoms are entered
 const hasSymptoms = computed(() => symptoms.value.trim().length > 0)
 </script>
 
@@ -243,7 +238,6 @@ const hasSymptoms = computed(() => symptoms.value.trim().length > 0)
   box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
 }
 
-/* Result Box Styles */
 .triage-result {
   margin-top: 24px;
   border: 2px solid;
@@ -273,7 +267,6 @@ const hasSymptoms = computed(() => symptoms.value.trim().length > 0)
 .ai-desc { font-size: 18px; font-weight: 500; color: #333; margin-bottom: 10px; }
 .disclaimer { font-size: 12px; color: #999; font-style: italic; }
 
-/* Navigation Buttons */
 .button-group { width: 100%; display: flex; gap: 16px; }
 
 .btn-secondary {
@@ -308,7 +301,7 @@ const hasSymptoms = computed(() => symptoms.value.trim().length > 0)
 .fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 
-/* Form groups */
+
 .form-group {
   margin-bottom: 16px;
 }
@@ -322,7 +315,6 @@ const hasSymptoms = computed(() => symptoms.value.trim().length > 0)
 }
 
 
-/* Priority number in header */
 .priority-number {
   width: 50px;
   height: 50px;
@@ -341,7 +333,6 @@ const hasSymptoms = computed(() => symptoms.value.trim().length > 0)
   text-transform: uppercase;
 }
 
-/* Result sections */
 .result-section {
   background: #f9fafb;
   padding: 16px;

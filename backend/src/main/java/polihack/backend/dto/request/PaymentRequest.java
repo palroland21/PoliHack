@@ -4,8 +4,8 @@ import lombok.Data;
 import polihack.backend.model.enums.Currency;
 
 public class PaymentRequest {
-    private Long amount;      // Suma (ex: 50)
-    private Currency currency; // Enum: RON, EUR, USD
+    private Long amount;
+    private Currency currency;
 
     public PaymentRequest(Long amount, Currency currency) {
         this.amount = amount;

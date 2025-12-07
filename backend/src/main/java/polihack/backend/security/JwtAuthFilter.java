@@ -14,7 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-// @Component eltávolítva - nem akarjuk, hogy automatikusan fusson
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -31,7 +30,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Ezeket az útvonalakat átengedjük JWT nélkül
         if (path.startsWith("/auth/") ||
             path.startsWith("/api/triage/") ||
             path.startsWith("/transport/") ||

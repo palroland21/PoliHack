@@ -53,7 +53,7 @@ public class ClientAuthController {
             String token = jwtUtil.generateToken(client.getUsername(), client.getPassword());
             System.out.println("Client " + client.getUsername() + " logged successfully!");
 
-            // Returnează token-ul și ID-ul clientului
+            // returnam id si token-ul clientului
             return ResponseEntity.ok(new LoginResponse(token, client.getId()));
         }
         return ResponseEntity.status(401).body("Invalid credentials!");

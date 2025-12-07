@@ -9,14 +9,12 @@ public class RegisterResponse {
     private String lastName;
     private String username;
 
-    // Câmpuri noi
     private String PID;
     private String telephone;
     private String email;
 
     private List<AssistanceType> assistanceTypeList;
 
-    // Constructor actualizat cu noile câmpuri
     public RegisterResponse(Long id, String firstName, String lastName, String username,
                             String PID, String telephone, String email,
                             List<AssistanceType> assistanceTypeList) {

@@ -140,7 +140,6 @@
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 
-// State variables for communication
 const isLoading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
@@ -161,7 +160,6 @@ const toggleResource = (type) => {
   }
 };
 
-// Funcții auxiliare pentru autentificare (copiate din modulele anterioare)
 const getLoggedUserId = () => {
   const userId = localStorage.getItem('loggedUserId');
   return (userId && !isNaN(Number(userId))) ? Number(userId) : 0;
@@ -174,13 +172,12 @@ const submitOffer = async () => {
   const loggedUserId = getLoggedUserId();
   const token = localStorage.getItem('token');
 
-  // 1. Verificare Autentificare (Soluția 1)
   if (loggedUserId === 0 || !token) {
     errorMessage.value = "User not authenticated. Please log in before submitting an offer.";
     return;
   }
 
-  // 2. Validare simplă
+  //validari
   if (form.selectedResources.length === 0 || !form.quantity || !form.location) {
     errorMessage.value = "Please select at least one resource type and complete Quantity and Location fields.";
     return;
@@ -188,26 +185,22 @@ const submitOffer = async () => {
 
   isLoading.value = true;
 
-  // 3. Prepare object for Backend (DTO)
-  // Ne asigurăm că trimitem un Array de String-uri (UPPERCASE cu underscore) pentru Set<ResourceType>
+  //prepare object for backend
+  //trimitem array de stringuri
   const requestPayload = {
-    // Alinierea numelui câmpului la DTO-ul backend: resourceTypes
     resourceTypes: form.selectedResources.map(resource => {
-      // Logică de mapare din frontend (ex: 'kids' -> 'FOR_KIDS')
       if (resource === 'kids') return 'FOR_KIDS';
       if (resource === 'meds') return 'MEDS';
       if (resource === 'clothes') return 'CLOTHES';
-      // Restul (water, food, other) se mapează direct la UPPERCASE
       return resource.toUpperCase().replace(/\s/g, '_');
     }),
     quantity: form.quantity,
-    pickupLocation: form.location, // Numele câmpului este aliniat cu DTO
-    additionalDetails: form.details, // Numele câmpului este aliniat cu DTO
+    pickupLocation: form.location,
+    additionalDetails: form.details,
     rescuerId: loggedUserId
   };
 
   try {
-    // 4. Axios call: Adaugă Authorization Header (pentru a preveni 403 Forbidden)
     const response = await axios.post('http://localhost:9090/resources/add', requestPayload, {
       headers: {
         'Content-Type': 'application/json',
@@ -219,7 +212,6 @@ const submitOffer = async () => {
 
     successMessage.value = "Resource offer successfully registered!";
 
-    // 5. Reset form
     form.selectedResources = [];
     form.quantity = '';
     form.location = '';
@@ -239,7 +231,7 @@ const submitOffer = async () => {
 </script>
 
 <style scoped>
-/* Stilurile rămân neschimbate */
+
 
 .resources-container {
   padding: 10px;
@@ -364,7 +356,7 @@ const submitOffer = async () => {
   margin-top: 10px;
   width: 100%;
   padding: 15px;
-  background-color: #ffc107; /* Schimb culoarea butonului la galben/portocaliu, ca tema Resources */
+  background-color: #ffc107;
   color: #333;
   border: none;
   border-radius: 8px;

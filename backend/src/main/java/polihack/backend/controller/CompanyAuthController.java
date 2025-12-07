@@ -53,7 +53,6 @@ public class CompanyAuthController {
 
             System.out.println("Company " + company.getUsername() + " logged successfully!");
 
-            // MODIFICARE: Returnează token-ul ȘI ID-ul
             return ResponseEntity.ok(new LoginResponse(token, company.getId()));
         }
 

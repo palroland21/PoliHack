@@ -1,9 +1,13 @@
 <script setup>
 import { ref, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 
 const emit = defineEmits(['update:selectedNeeds', 'next', 'back'])
 
+const router = useRouter();
+
 const selectedNeeds = ref([])
+
 
 const needs = [
   {
@@ -33,7 +37,12 @@ function toggleNeed(id) {
 }
 
 function handleContinue() {
-  emit('next')
+  //daca userul a selectat varianta 2, resurse & logistics
+  if (selectedNeeds.value.includes(2)) {
+    router.push('/select-resources')
+  } else {
+    emit('next')
+  }
 }
 </script>
 
@@ -41,7 +50,7 @@ function handleContinue() {
   <div class="step-container">
 
     <div class="step-header">
-      <h1 class="step-title">Step 2: What Do You Need?</h1>
+      <h1 class="step-title">Step 1: What Do You Need?</h1>
       <p class="step-description">Select the category of help you need</p>
     </div>
 

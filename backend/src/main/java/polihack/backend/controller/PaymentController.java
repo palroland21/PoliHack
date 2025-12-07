@@ -31,12 +31,12 @@ public class PaymentController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Default la RON daca nu e specificat
+        // default la ron daca nu e specificat
         Currency currencyEnum = paymentRequest.getCurrency() != null ? paymentRequest.getCurrency() : Currency.RON;
 
         String stripeCurrency = currencyEnum.name().toLowerCase();
 
-        // Calculam suma in cea mai mica unitate (bani/centi)
+        // calc suma in cea mai mica unitate (bani/centi)
         long amountInCents = paymentRequest.getAmount() * 100;
 
         try {
@@ -50,7 +50,7 @@ public class PaymentController {
                                     .setQuantity(1L)
                                     .setPriceData(
                                             SessionCreateParams.LineItem.PriceData.builder()
-                                                    .setCurrency(stripeCurrency) // Folosim string-ul convertit
+                                                    .setCurrency(stripeCurrency) // folosim string-ul convertit
                                                     .setUnitAmount(amountInCents)
                                                     .setProductData(
                                                             SessionCreateParams.LineItem.PriceData.ProductData.builder()
@@ -78,14 +78,14 @@ public class PaymentController {
     public ResponseEntity<Map<String, String>> createSubscriptionSession(@RequestBody Map<String, Object> payload) {
         Stripe.apiKey = stripeApiKey;
 
-        // Setam suma de: 10.00 USD
+        // setam suma de: 10.00 USD
         long amountInCents = 1000L;
         String currency = "usd";
 
         try {
             SessionCreateParams params = SessionCreateParams.builder()
                     .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
-                    // IMPORTANT: Modul trebuie să fie SUBSCRIPTION
+                    //modul trb sa fie subscription
                     .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
                     .setSuccessUrl(clientBaseUrl + "/success")
                     .setCancelUrl(clientBaseUrl + "/donate")
@@ -96,7 +96,7 @@ public class PaymentController {
                                             SessionCreateParams.LineItem.PriceData.builder()
                                                     .setCurrency(currency)
                                                     .setUnitAmount(amountInCents)
-                                                    // IMPORTANT: Aici definim recurența (LUNARA)
+                                                    // recurenta lunara
                                                     .setRecurring(
                                                             SessionCreateParams.LineItem.PriceData.Recurring.builder()
                                                                     .setInterval(SessionCreateParams.LineItem.PriceData.Recurring.Interval.MONTH)

@@ -215,7 +215,6 @@ export default {
   font-size: 20px;
 }
 
-/* Result page styles */
 .result-container {
   max-width: 600px;
   width: 100%;
@@ -313,7 +312,6 @@ export default {
   font-weight: 500;
 }
 
-/* Summary Section */
 .summary-section {
   width: 100%;
   background: white;
@@ -380,7 +378,6 @@ export default {
 .level-2 { color: #f59e0b; }
 .level-3 { color: #22c55e; }
 
-/* Next Steps */
 .next-steps {
   width: 100%;
   background: #f0fdf4;

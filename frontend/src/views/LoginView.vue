@@ -79,16 +79,15 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useMainStore } from '@/stores/mainStore'; // Am schimbat în 'useMainStore' bazat pe fișierul inițial
+import { useMainStore } from '@/stores/mainStore';
 
 const router = useRouter();
 const route = useRoute();
-const store = useMainStore(); // Folosim store-ul principal
+const store = useMainStore();
 
 const activeTab = ref('individual');
 const errorMessage = ref('');
 
-// O singură structură reactivă pentru datele din formular
 const loginForm = reactive({
   username: '',
   password: ''
@@ -104,7 +103,7 @@ onMounted(() => {
 
 const setActiveTab = (tab) => {
   activeTab.value = tab;
-  loginForm.username = ''; // Resetăm câmpurile la schimbarea tab-ului
+  loginForm.username = '';
   loginForm.password = '';
   errorMessage.value = '';
 };
@@ -127,24 +126,21 @@ const submitLogin = async () => {
     if (response.ok) {
       const data = await response.json();
 
-      // ==========================================================
-      // VERIFICARE: Acum că backend-ul returnează ID-ul în câmpul 'id'
-      // ==========================================================
       const userId = data.id || data.userId;
 
       if (userId) {
-        localStorage.setItem('loggedUserId', userId); // SALVAREA ID-ului (Fix-ul principal)
+        localStorage.setItem('loggedUserId', userId);
         console.log(`User ID ${userId} saved.`);
       } else {
         console.warn("User ID not found in the server response data. Check backend LoginResponse DTO.");
       }
 
-      // Salvarea celorlalte date necesare
+      //salvarea datelor necesare
       localStorage.setItem('token', data.token);
       localStorage.setItem('userType', activeTab.value);
       localStorage.setItem('username', loginForm.username);
 
-      // Actualizarea stării în Pinia (am presupus că folosești store.login din fisierul vechi)
+      // actualizare stare
       if(store.login) {
         store.login(loginForm.username);
       }
@@ -163,8 +159,6 @@ const submitLogin = async () => {
 </script>
 
 <style scoped>
-/* Stilurile rămân neschimbate */
-/* ... */
 
 .login-container {
   min-height: 100vh;
@@ -231,7 +225,6 @@ h1 {
   margin-bottom: 30px;
 }
 
-/* TABS STYLING (Identic cu Register) */
 .tabs-container {
   display: flex;
   background-color: #f1f3f5;
@@ -262,7 +255,6 @@ h1 {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* FORM STYLES */
 .form-group {
   margin-bottom: 20px;
 }
@@ -290,7 +282,6 @@ label {
   background-color: white;
 }
 
-/* ERROR MESSAGE */
 .error-alert {
   background-color: #ffeaea;
   color: #d63301;

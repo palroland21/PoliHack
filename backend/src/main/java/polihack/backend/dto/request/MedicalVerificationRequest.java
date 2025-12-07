@@ -3,7 +3,7 @@ package polihack.backend.dto.request;
 public class MedicalVerificationRequest {
 
     private String fullName;
-    private String cuim; // Codul de medic
+    private String cuim; //codul de medic unic
     private String specialization;
 
     public String getFullName() {

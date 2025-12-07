@@ -69,13 +69,10 @@ import { computed } from 'vue';
 const store = useMainStore();
 const router = useRouter();
 
-// Luăm tipul utilizatorului.
-// Încercăm întâi din Store (dacă l-ai actualizat conform discuției anterioare pentru reactivitate),
-// altfel fallback pe localStorage.
+// luam tipul user-ului
+// incercam prima data din store
 const currentUserType = computed(() => {
   if (store.isLoggedIn) {
-    // Dacă ai implementat `store.userType` în mainStore.js, folosește `return store.userType;` aici pentru reactivitate maximă.
-    // Altfel, lăsăm așa cum era:
     return localStorage.getItem('userType');
   }
   return null;

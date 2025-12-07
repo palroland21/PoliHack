@@ -26,10 +26,7 @@ public class RescuerDashboardService {
         this.rescuerRepo = rescuerRepo;
     }
 
-    // --- 1. DOAR TRANSPORT ---
-    // Acum primim rescuerId ca parametru
     public List<RescuerOfferDTO> getTransportOffers(Long rescuerId) {
-        // Logica exact ca la colegul tau: cautam dupa ID
         Rescuer rescuer = rescuerRepo.findById(rescuerId)
                 .orElseThrow(() -> new RuntimeException("Rescuer not found with id: " + rescuerId));
 
@@ -45,7 +42,7 @@ public class RescuerDashboardService {
                 .collect(Collectors.toList());
     }
 
-    // --- 2. DOAR CAZARE ---
+
     public List<RescuerOfferDTO> getHousingOffers(Long rescuerId) {
         Rescuer rescuer = rescuerRepo.findById(rescuerId)
                 .orElseThrow(() -> new RuntimeException("Rescuer not found with id: " + rescuerId));
@@ -62,7 +59,6 @@ public class RescuerDashboardService {
                 .collect(Collectors.toList());
     }
 
-    // --- 3. DOAR RESURSE ---
     public List<RescuerOfferDTO> getResourceOffers(Long rescuerId) {
         Rescuer rescuer = rescuerRepo.findById(rescuerId)
                 .orElseThrow(() -> new RuntimeException("Rescuer not found with id: " + rescuerId));
@@ -79,7 +75,6 @@ public class RescuerDashboardService {
                 .collect(Collectors.toList());
     }
 
-    // Stergerea ramane la fel (nu depinde de utilizator direct, ci de ID-ul ofertei)
     public void deleteOffer(Long id, String type) {
         switch (type) {
             case "transport" -> transportRepo.deleteById(id);

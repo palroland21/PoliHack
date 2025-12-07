@@ -85,7 +85,6 @@ const goHome = () => {
   router.push('/');
 };
 
-//selectam componenta dinamic
 const activeComponent = computed(() => {
   switch (activeTab.value) {
     case 'transport': return TransportModule;
