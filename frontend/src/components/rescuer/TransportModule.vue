@@ -14,7 +14,6 @@
       <div class="form-group">
         <label>Vehicle Type</label>
         <div class="grid-3">
-
           <div
               class="selection-card"
               :class="{ active: form.vehicleType === 'car' }"
@@ -41,7 +40,6 @@
             <span class="card-title">Truck</span>
             <span class="card-subtitle">Cargo/Goods</span>
           </div>
-
         </div>
       </div>
 
@@ -68,7 +66,6 @@
       <div class="form-group">
         <label>Availability</label>
         <div class="grid-3">
-
           <div
               class="selection-card center-content"
               :class="{ active: form.availability === 'flexible' }"
@@ -95,21 +92,42 @@
             <span class="dot red"></span>
             <span class="card-title">Immediate</span>
           </div>
-
         </div>
       </div>
 
-      <button type="submit" class="submit-btn">
-        Register Offer →
+      <button
+          type="submit"
+          class="submit-btn"
+          :disabled="isLoading"
+      >
+        <span v-if="!isLoading">Register Offer →</span>
+        <span v-else>Sending...</span>
       </button>
+
+      <div class="message-container">
+        <p v-if="successMessage" class="success-text">
+          ✅ {{ successMessage }}
+        </p>
+
+        <p v-if="errorMessage" class="error-text">
+          ⚠️ {{ errorMessage }}
+        </p>
+      </div>
 
     </form>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import axios from 'axios';
 
+// State variables
+const isLoading = ref(false);
+const errorMessage = ref('');
+const successMessage = ref('');
+
+// Form data
 const form = reactive({
   vehicleType: 'car',
   capacity: '',
@@ -117,16 +135,90 @@ const form = reactive({
   availability: 'soon'
 });
 
-const submitOffer = () => {
-  console.log("Submitting Transport Offer:", form);
-  alert("Offer registered! (Check console for data)");
+// Functie ajutatoare pentru a prelua ID-ul din Local Storage
+const getLoggedUserId = () => {
+  // Încercăm să preluăm ID-ul din Local Storage, care a fost salvat la login
+  const userId = localStorage.getItem('loggedUserId');
+
+  if (!userId) {
+    console.warn("DEBUG AUTH: 'loggedUserId' key is missing in Local Storage. Login is required.");
+    return 0;
+  }
+
+  const numericId = Number(userId);
+
+  if (isNaN(numericId) || numericId <= 0) {
+    console.error(`DEBUG AUTH: 'loggedUserId' found but is invalid/zero: ${userId}`);
+    return 0; // Invalid ID
+  }
+
+  return numericId;
+};
+
+
+const submitOffer = async () => {
+  // 1. Resetăm mesajele anterioare
+  errorMessage.value = '';
+  successMessage.value = '';
+
+  // Preluăm ID-ul utilizatorului logat
+  const loggedUserId = getLoggedUserId();
+
+  // 1.1. Verificare Autentificare
+  if (loggedUserId === 0) {
+    errorMessage.value = "User not authenticated. Please log in before submitting an offer.";
+    return;
+  }
+
+  // 2. Validare simplă
+  if (!form.capacity || !form.destinations) {
+    errorMessage.value = "Please complete capacity and destinations.";
+    return;
+  }
+
+  isLoading.value = true;
+
+  // 3. Prepare object for Backend (DTO)
+  const requestPayload = {
+    vehicleType: form.vehicleType.toUpperCase(),
+    capacity: form.capacity,
+    destinations: form.destinations,
+    availabilityStatus: form.availability.toUpperCase(),
+    rescuerId: loggedUserId
+  };
+
+  try {
+    // 4. Axios call
+    const response = await axios.post('http://localhost:9090/transport/add', requestPayload);
+
+    console.log("Success:", response.data);
+
+    // Setăm mesajul de succes în pagină
+    successMessage.value = "Offer successfully registered!";
+
+    // 5. Reset form
+    form.capacity = '';
+    form.destinations = '';
+    form.vehicleType = 'car';
+    form.availability = 'soon';
+
+  } catch (error) {
+    console.error("Technical error details:", error);
+    errorMessage.value = "Something went wrong. Please try again later.";
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
 <style scoped>
+/* ... Stilurile existente rămân la fel ... */
+
 .transport-container {
   padding: 10px;
   animation: fadeIn 0.3s ease-in-out;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .header-center {
@@ -261,10 +353,37 @@ const submitOffer = () => {
   transition: background 0.3s;
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
   background-color: #66bb6a;
 }
 
+.submit-btn:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* STILURI NOI PENTRU MESAJE */
+.message-container {
+  text-align: center;
+  margin-top: 10px;
+  min-height: 24px; /* Previne "săritura" layout-ului */
+}
+
+.error-text {
+  color: #dc3545;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.success-text {
+  color: #198754; /* Culoarea verde din temă */
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  animation: fadeIn 0.5s;
+}
 
 @media (max-width: 500px) {
   .grid-3 {

@@ -109,20 +109,28 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import axios from 'axios';
 
+// State variables for communication
+const isLoading = ref(false);
+const errorMessage = ref('');
+const successMessage = ref('');
+
+// LISTA ACTUALIZATĂ: Se potrivește cu Enum-ul Java HousingFacility (WIFI, PRIVATE_BATHROOM, PETS_ALLOWED etc.)
 const amenitiesList = [
   "WiFi",
   "Kitchen",
-  "Private Bath",
+  "Private Bathroom", // Modificat pentru a se potrivi cu PRIVATE_BATHROOM
   "Heating",
   "Pets Allowed",
-  "Parking",
-  "Bed Linens"
+  "Parking"
+  // "Bed Linens" a fost eliminat
 ];
 
 
 const form = reactive({
+// ... restul formului rămâne la fel
   spaceType: 'room',
   capacity: '',
   address: '',
@@ -131,6 +139,7 @@ const form = reactive({
   notes: ''
 });
 
+// ... toggleAmenity rămâne la fel ...
 const toggleAmenity = (amenity) => {
   if (form.amenities.includes(amenity)) {
     form.amenities = form.amenities.filter(item => item !== amenity);
@@ -139,9 +148,92 @@ const toggleAmenity = (amenity) => {
   }
 };
 
-const submitOffer = () => {
-  console.log("Submitting Housing Offer:", form);
-  alert("Housing offer registered! (Check console)");
+
+// ... getLoggedUserId rămâne la fel ...
+const getLoggedUserId = () => {
+  const userId = localStorage.getItem('loggedUserId');
+
+  if (!userId) {
+    return 0;
+  }
+
+  const numericId = Number(userId);
+
+  if (isNaN(numericId) || numericId <= 0) {
+    return 0;
+  }
+
+  return numericId;
+};
+
+
+const submitOffer = async () => {
+  errorMessage.value = '';
+  successMessage.value = '';
+
+  const loggedUserId = getLoggedUserId();
+  const token = localStorage.getItem('token');
+
+  // 1. Verificare Autentificare (Soluția 1)
+  if (loggedUserId === 0 || !token) {
+    errorMessage.value = "User not authenticated. Please log in before submitting an offer.";
+    return;
+  }
+
+  // 2. Validare simplă
+  if (!form.capacity || !form.address) {
+    errorMessage.value = "Please complete capacity and address fields.";
+    return;
+  }
+
+  isLoading.value = true;
+
+  // 3. Prepare object for Backend (DTO)
+  const requestPayload = {
+    housingType: form.spaceType.toUpperCase(),
+    capacity: form.capacity,
+    address: form.address,
+    availablePeriod: form.duration,
+
+    // SOLUȚIA FINALĂ: Mapare corectă a String-urilor cu spații la Enum-urile cu underscore
+    // Ex: "Private Bathroom" -> "PRIVATE_BATHROOM"
+    facilities: form.amenities.map(a => a.toUpperCase().replace(/\s/g, '_')),
+
+    additionalNotes: form.notes,
+    rescuerId: loggedUserId
+  };
+
+  try {
+    // 4. Axios call: Adaugă Authorization Header (Soluția 1)
+    const response = await axios.post('http://localhost:9090/housing/add', requestPayload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    console.log("Housing Offer Success:", response.data);
+
+    successMessage.value = "Housing offer successfully registered!";
+
+    // 5. Reset form (opțional)
+    form.capacity = '';
+    form.address = '';
+    form.duration = '';
+    form.amenities = [];
+    form.notes = '';
+    form.spaceType = 'room';
+
+  } catch (error) {
+    console.error("Technical error details:", error);
+    if (error.response && error.response.status === 403) {
+      errorMessage.value = "Access denied. Your session may have expired. Please log in again.";
+    } else {
+      errorMessage.value = "Something went wrong. Check if the server is running or if data format is correct.";
+    }
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
