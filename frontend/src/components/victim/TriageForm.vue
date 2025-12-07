@@ -56,10 +56,10 @@ async function analyzeSymptoms() {
 
 
     triageResult.value = getSeverityDetails(
-      response.priority,
-      response.category,
-      response.advice,
-      response.summary
+        response.priority,
+        response.category,
+        response.advice,
+        response.summary
     )
 
   } catch (error) {

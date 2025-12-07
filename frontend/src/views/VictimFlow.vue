@@ -5,24 +5,24 @@
     </button>
 
     <LocationStep
-      v-if="step === 1"
-      @update:location="location => confirmedLocation = location"
-      @update:coordinates="coords => confirmedCoordinates = coords"
-      @next="nextStep"
+        v-if="step === 1"
+        @update:location="location => confirmedLocation = location"
+        @update:coordinates="coords => confirmedCoordinates = coords"
+        @next="nextStep"
     />
 
     <NeedsSelector
-      v-if="step === 2"
-      @update:selectedNeeds="needs => selectedNeeds = needs"
-      @next="nextStep"
-      @back="prevStep"
+        v-if="step === 2"
+        @update:selectedNeeds="needs => selectedNeeds = needs"
+        @next="nextStep"
+        @back="prevStep"
     />
 
     <TriageForm
-      v-if="step === 3"
-      @update:triageResult="result => triageResult = result"
-      @submit="showResult"
-      @back="prevStep"
+        v-if="step === 3"
+        @update:triageResult="result => triageResult = result"
+        @submit="showResult"
+        @back="prevStep"
     />
 
     <div v-if="step === 4" class="result-container">
